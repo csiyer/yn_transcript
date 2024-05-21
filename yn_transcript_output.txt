@@ -1,0 +1,584 @@
+Witness Yes/No Question Statistics 
+
+Witness: REGIS DEON THOMAS
+
+Witness: WILMER ABRAM
+	Examiner: ARNOLD
+		 Yes/no questions: 0
+		 Total questions: 0
+		 Yes/no percentage: error: no questions%
+	Examiner: JAFFE
+		 Yes/no questions: 0
+		 Total questions: 0
+		 Yes/no percentage: error: no questions%
+
+Witness: JANICE CHAPPELL
+	Examiner: ARNOLD
+		 Yes/no questions: 0
+		 Total questions: 0
+		 Yes/no percentage: error: no questions%
+	Examiner: JAFFE
+		 Yes/no questions: 0
+		 Total questions: 0
+		 Yes/no percentage: error: no questions%
+
+Witness: BERTRAND DICKSON
+	Examiner: ARNOLD
+		 Yes/no questions: 0
+		 Total questions: 0
+		 Yes/no percentage: error: no questions%
+	Examiner: JAFFE
+		 Yes/no questions: 0
+		 Total questions: 0
+		 Yes/no percentage: error: no questions%
+
+Witness: DEANNA BENEDICT
+	Examiner: ARNOLD
+		 Yes/no questions: 0
+		 Total questions: 0
+		 Yes/no percentage: error: no questions%
+	Examiner: JAFFE
+		 Yes/no questions: 0
+		 Total questions: 0
+		 Yes/no percentage: error: no questions%
+
+Witness: ROBERT PETERSON
+	Examiner: ARNOLD
+		 Yes/no questions: 0
+		 Total questions: 0
+		 Yes/no percentage: error: no questions%
+	Examiner: JAFFE
+		 Yes/no questions: 0
+		 Total questions: 0
+		 Yes/no percentage: error: no questions%
+
+Witness: PEDRO ORTIZ
+	Examiner: ARNOLD
+		 Yes/no questions: 0
+		 Total questions: 0
+		 Yes/no percentage: error: no questions%
+	Examiner: JAFFE
+		 Yes/no questions: 0
+		 Total questions: 0
+		 Yes/no percentage: error: no questions%
+
+Witness: MARK WAYNE BUSTER
+	Examiner: ARNOLD
+		 Yes/no questions: 0
+		 Total questions: 0
+		 Yes/no percentage: error: no questions%
+
+Witness: LARRY JOHNSON
+	Examiner: ARNOLD
+		 Yes/no questions: 0
+		 Total questions: 0
+		 Yes/no percentage: error: no questions%
+	Examiner: JAFFE
+		 Yes/no questions: 0
+		 Total questions: 0
+		 Yes/no percentage: error: no questions%
+
+Witness: JOHNNIE MACK GOODMAN
+	Examiner: ARNOLD
+		 Yes/no questions: 0
+		 Total questions: 0
+		 Yes/no percentage: error: no questions%
+	Examiner: JAFFE
+		 Yes/no questions: 0
+		 Total questions: 0
+		 Yes/no percentage: error: no questions%
+
+Witness: EDDIE COLE
+	Examiner: JAFFE
+		 Yes/no questions: 0
+		 Total questions: 0
+		 Yes/no percentage: error: no questions%
+	Examiner: ARNOLD
+		 Yes/no questions: 0
+		 Total questions: 0
+		 Yes/no percentage: error: no questions%
+
+Witness: DWIGHT VAN HORN
+	Examiner: ARNOLD
+		 Yes/no questions: 0
+		 Total questions: 0
+		 Yes/no percentage: error: no questions%
+	Examiner: JAFFE
+		 Yes/no questions: 0
+		 Total questions: 0
+		 Yes/no percentage: error: no questions%
+
+Witness: MARGARETTA GULLY
+	Examiner: ARNOLD
+		 Yes/no questions: 0
+		 Total questions: 0
+		 Yes/no percentage: error: no questions%
+	Examiner: JAFFE
+		 Yes/no questions: 0
+		 Total questions: 0
+		 Yes/no percentage: error: no questions%
+
+Witness: MARVIN BRANSCOMB
+	Examiner: ARNOLD
+		 Yes/no questions: 0
+		 Total questions: 0
+		 Yes/no percentage: error: no questions%
+
+Witness: DEMORYEA POLIDORE
+	Examiner: ARNOLD
+		 Yes/no questions: 0
+		 Total questions: 0
+		 Yes/no percentage: error: no questions%
+	Examiner: JAFFE
+		 Yes/no questions: 0
+		 Total questions: 0
+		 Yes/no percentage: error: no questions%
+
+Witness: JOHN SHANNON
+	Examiner: ARNOLD
+		 Yes/no questions: 0
+		 Total questions: 0
+		 Yes/no percentage: error: no questions%
+	Examiner: JAFFE
+		 Yes/no questions: 0
+		 Total questions: 0
+		 Yes/no percentage: error: no questions%
+
+Witness: BOBBIE HARRIS
+	Examiner: ARNOLD
+		 Yes/no questions: 0
+		 Total questions: 0
+		 Yes/no percentage: error: no questions%
+
+Witness: ALICIA JORDAN
+	Examiner: ARNOLD
+		 Yes/no questions: 0
+		 Total questions: 0
+		 Yes/no percentage: error: no questions%
+	Examiner: JAFFE
+		 Yes/no questions: 0
+		 Total questions: 0
+		 Yes/no percentage: error: no questions%
+
+Witness: INGRID CREAR
+	Examiner: ARNOLD
+		 Yes/no questions: 0
+		 Total questions: 0
+		 Yes/no percentage: error: no questions%
+	Examiner: JAFFE
+		 Yes/no questions: 0
+		 Total questions: 0
+		 Yes/no percentage: error: no questions%
+
+Witness: NICOLE PRINCE
+	Examiner: ARNOLD
+		 Yes/no questions: 0
+		 Total questions: 0
+		 Yes/no percentage: error: no questions%
+	Examiner: JAFFE
+		 Yes/no questions: 0
+		 Total questions: 0
+		 Yes/no percentage: error: no questions%
+
+Witness: MARK METCALF
+	Examiner: ARNOLD
+		 Yes/no questions: 0
+		 Total questions: 0
+		 Yes/no percentage: error: no questions%
+	Examiner: JAFFE
+		 Yes/no questions: 0
+		 Total questions: 0
+		 Yes/no percentage: error: no questions%
+
+Witness: DOUGLAS SLAUGHTER
+	Examiner: ARNOLD
+		 Yes/no questions: 0
+		 Total questions: 0
+		 Yes/no percentage: error: no questions%
+	Examiner: JAFFE
+		 Yes/no questions: 0
+		 Total questions: 0
+		 Yes/no percentage: error: no questions%
+
+Witness: FREDERICK DOUGLAS REYNOLDS
+	Examiner: ARNOLD
+		 Yes/no questions: 0
+		 Total questions: 0
+		 Yes/no percentage: error: no questions%
+	Examiner: JAFFE
+		 Yes/no questions: 0
+		 Total questions: 0
+		 Yes/no percentage: error: no questions%
+
+Witness: DONG LEE
+	Examiner: ARNOLD
+		 Yes/no questions: 0
+		 Total questions: 0
+		 Yes/no percentage: error: no questions%
+	Examiner: JAFFE
+		 Yes/no questions: 0
+		 Total questions: 0
+		 Yes/no percentage: error: no questions%
+
+Witness: KEYON PYE
+	Examiner: ARNOLD
+		 Yes/no questions: 0
+		 Total questions: 0
+		 Yes/no percentage: error: no questions%
+	Examiner: JAFFE
+		 Yes/no questions: 0
+		 Total questions: 0
+		 Yes/no percentage: error: no questions%
+
+Witness: MICHAEL LOPEZ
+	Examiner: ARNOLD
+		 Yes/no questions: 0
+		 Total questions: 0
+		 Yes/no percentage: error: no questions%
+	Examiner: JAFFE
+		 Yes/no questions: 0
+		 Total questions: 0
+		 Yes/no percentage: error: no questions%
+
+Witness: SUSAN YOUNT
+	Examiner: JAFFE
+		 Yes/no questions: 0
+		 Total questions: 0
+		 Yes/no percentage: error: no questions%
+	Examiner: ARNOLD
+		 Yes/no questions: 0
+		 Total questions: 0
+		 Yes/no percentage: error: no questions%
+
+Witness: DWIGHT H DOBBIN
+	Examiner: ARNOLD
+		 Yes/no questions: 0
+		 Total questions: 0
+		 Yes/no percentage: error: no questions%
+
+Witness: LARRY JOSEPH BRANDENBURG
+	Examiner: ARNOLD
+		 Yes/no questions: 0
+		 Total questions: 0
+		 Yes/no percentage: error: no questions%
+	Examiner: JAFFE
+		 Yes/no questions: 0
+		 Total questions: 0
+		 Yes/no percentage: error: no questions%
+
+Witness: DESHAUNNA CODY THOMAS
+	Examiner: JAFFE
+		 Yes/no questions: 0
+		 Total questions: 0
+		 Yes/no percentage: error: no questions%
+	Examiner: ARNOLD
+		 Yes/no questions: 0
+		 Total questions: 0
+		 Yes/no percentage: error: no questions%
+
+Witness: CALVIN COOKSEY
+
+Witness: THOMAS MATTHEW THOMPSON
+	Examiner: ARNOLD
+		 Yes/no questions: 0
+		 Total questions: 0
+		 Yes/no percentage: error: no questions%
+	Examiner: JAFFE
+		 Yes/no questions: 0
+		 Total questions: 0
+		 Yes/no percentage: error: no questions%
+
+Witness: CALVIN EDWARD COOKSEY
+	Examiner: ARNOLD
+		 Yes/no questions: 0
+		 Total questions: 0
+		 Yes/no percentage: error: no questions%
+	Examiner: JAFFE
+		 Yes/no questions: 0
+		 Total questions: 0
+		 Yes/no percentage: error: no questions%
+
+Witness: WILLIAM JACKSON
+	Examiner: ARNOLD
+		 Yes/no questions: 0
+		 Total questions: 0
+		 Yes/no percentage: error: no questions%
+
+Witness: SHAMICA HARGRAVE
+	Examiner: ARNOLD
+		 Yes/no questions: 0
+		 Total questions: 0
+		 Yes/no percentage: error: no questions%
+	Examiner: JAFFE
+		 Yes/no questions: 0
+		 Total questions: 0
+		 Yes/no percentage: error: no questions%
+
+Witness: HOURIE L TAYLOR
+	Examiner: ARNOLD
+		 Yes/no questions: 0
+		 Total questions: 0
+		 Yes/no percentage: error: no questions%
+
+Witness: ROBERT ROJAS
+	Examiner: ARNOLD
+		 Yes/no questions: 0
+		 Total questions: 0
+		 Yes/no percentage: error: no questions%
+	Examiner: JAFFE
+		 Yes/no questions: 0
+		 Total questions: 0
+		 Yes/no percentage: error: no questions%
+
+Witness: RONALD DUVAL
+	Examiner: JAFFE
+		 Yes/no questions: 0
+		 Total questions: 0
+		 Yes/no percentage: error: no questions%
+	Examiner: ARNOLD
+		 Yes/no questions: 0
+		 Total questions: 0
+		 Yes/no percentage: error: no questions%
+
+Witness: TIMOTHY MILEY
+	Examiner: ARNOLD
+		 Yes/no questions: 0
+		 Total questions: 0
+		 Yes/no percentage: error: no questions%
+
+Witness: JAMES RIBE
+	Examiner: ARNOLD
+		 Yes/no questions: 0
+		 Total questions: 0
+		 Yes/no percentage: error: no questions%
+	Examiner: JAFFE
+		 Yes/no questions: 0
+		 Total questions: 0
+		 Yes/no percentage: error: no questions%
+
+Witness: WILLIAM VICARY
+	Examiner: JAFFE
+		 Yes/no questions: 0
+		 Total questions: 0
+		 Yes/no percentage: error: no questions%
+	Examiner: ARNOLD
+		 Yes/no questions: 0
+		 Total questions: 0
+		 Yes/no percentage: error: no questions%
+	Examiner: JAPVE
+		 Yes/no questions: 0
+		 Total questions: 0
+		 Yes/no percentage: error: no questions%
+
+Witness: ARNOLD URIAS VILLARUEL
+	Examiner: JAFFE
+		 Yes/no questions: 0
+		 Total questions: 0
+		 Yes/no percentage: error: no questions%
+	Examiner: ARNOLD
+		 Yes/no questions: 0
+		 Total questions: 0
+		 Yes/no percentage: error: no questions%
+
+Witness: MARVIN EUGENE BRANSCOMB
+	Examiner: JAFFE
+		 Yes/no questions: 0
+		 Total questions: 0
+		 Yes/no percentage: error: no questions%
+	Examiner: ARNOLD
+		 Yes/no questions: 0
+		 Total questions: 0
+		 Yes/no percentage: error: no questions%
+
+Witness: MICHAEL BUMCROT
+	Examiner: JAFFE
+		 Yes/no questions: 0
+		 Total questions: 0
+		 Yes/no percentage: error: no questions%
+	Examiner: ARNOLD
+		 Yes/no questions: 0
+		 Total questions: 0
+		 Yes/no percentage: error: no questions%
+
+Witness: GISELE LAVIGNE
+	Examiner: JAFFE
+		 Yes/no questions: 0
+		 Total questions: 0
+		 Yes/no percentage: error: no questions%
+	Examiner: ARNOLD
+		 Yes/no questions: 0
+		 Total questions: 0
+		 Yes/no percentage: error: no questions%
+
+Witness: LYNNE DENISE HEROLD
+	Examiner: JAFFE
+		 Yes/no questions: 0
+		 Total questions: 0
+		 Yes/no percentage: error: no questions%
+	Examiner: ARNOLD
+		 Yes/no questions: 0
+		 Total questions: 0
+		 Yes/no percentage: error: no questions%
+
+Witness: STEVEN JUDD
+	Examiner: ARNOLD
+		 Yes/no questions: 0
+		 Total questions: 0
+		 Yes/no percentage: error: no questions%
+	Examiner: JAFFE
+		 Yes/no questions: 0
+		 Total questions: 0
+		 Yes/no percentage: error: no questions%
+
+Witness: GEORGE HOLT
+	Examiner: ARNOLD
+		 Yes/no questions: 0
+		 Total questions: 0
+		 Yes/no percentage: error: no questions%
+	Examiner: JAFFE
+		 Yes/no questions: 0
+		 Total questions: 0
+		 Yes/no percentage: error: no questions%
+
+Witness: WILLIE MAE ADKINS
+	Examiner: ARNOLD
+		 Yes/no questions: 0
+		 Total questions: 0
+		 Yes/no percentage: error: no questions%
+
+Witness: DALICIA ADKINS
+	Examiner: ARNOLD
+		 Yes/no questions: 0
+		 Total questions: 0
+		 Yes/no percentage: error: no questions%
+
+Witness: JAMES MACDONALD
+	Examiner: ARNOLD
+		 Yes/no questions: 0
+		 Total questions: 0
+		 Yes/no percentage: error: no questions%
+
+Witness: TONIA MACDONALD
+	Examiner: ARNOLD
+		 Yes/no questions: 0
+		 Total questions: 0
+		 Yes/no percentage: error: no questions%
+
+Witness: CLARK BURRELL
+	Examiner: ARNOLD
+		 Yes/no questions: 0
+		 Total questions: 0
+		 Yes/no percentage: error: no questions%
+
+Witness: EDNA BURRELL
+	Examiner: ARNOLD
+		 Yes/no questions: 0
+		 Total questions: 0
+		 Yes/no percentage: error: no questions%
+
+Witness: KAWASCI JACKSON
+	Examiner: JAFFE
+		 Yes/no questions: 0
+		 Total questions: 0
+		 Yes/no percentage: error: no questions%
+	Examiner: ARNOLD
+		 Yes/no questions: 0
+		 Total questions: 0
+		 Yes/no percentage: error: no questions%
+
+Witness: WILLIE RILEY
+	Examiner: JAFFE
+		 Yes/no questions: 0
+		 Total questions: 0
+		 Yes/no percentage: error: no questions%
+	Examiner: ARNOLD
+		 Yes/no questions: 0
+		 Total questions: 0
+		 Yes/no percentage: error: no questions%
+
+Witness: KIM GRAHAM
+	Examiner: JAFFE
+		 Yes/no questions: 0
+		 Total questions: 0
+		 Yes/no percentage: error: no questions%
+	Examiner: ARNOLD
+		 Yes/no questions: 0
+		 Total questions: 0
+		 Yes/no percentage: error: no questions%
+
+Witness: IRIS THOMAS
+	Examiner: JAFFE
+		 Yes/no questions: 0
+		 Total questions: 0
+		 Yes/no percentage: error: no questions%
+	Examiner: ARNOLD
+		 Yes/no questions: 0
+		 Total questions: 0
+		 Yes/no percentage: error: no questions%
+
+Witness: SHEILA GRIGGS
+	Examiner: JAFFE
+		 Yes/no questions: 0
+		 Total questions: 0
+		 Yes/no percentage: error: no questions%
+	Examiner: ARNOLD
+		 Yes/no questions: 0
+		 Total questions: 0
+		 Yes/no percentage: error: no questions%
+
+Witness: PATRICIA MOSLEY
+	Examiner: JAFFE
+		 Yes/no questions: 0
+		 Total questions: 0
+		 Yes/no percentage: error: no questions%
+	Examiner: ARNOLD
+		 Yes/no questions: 0
+		 Total questions: 0
+		 Yes/no percentage: error: no questions%
+
+Witness: DANIEL WELLS
+	Examiner: JAFFE
+		 Yes/no questions: 0
+		 Total questions: 0
+		 Yes/no percentage: error: no questions%
+
+Witness: KATHERINE MOSLEY
+	Examiner: JAFFE
+		 Yes/no questions: 0
+		 Total questions: 0
+		 Yes/no percentage: error: no questions%
+	Examiner: ARNOLD
+		 Yes/no questions: 0
+		 Total questions: 0
+		 Yes/no percentage: error: no questions%
+
+Witness: MICHELLE RIGMADEN
+	Examiner: JAFFE
+		 Yes/no questions: 0
+		 Total questions: 0
+		 Yes/no percentage: error: no questions%
+	Examiner: ARNOLD
+		 Yes/no questions: 0
+		 Total questions: 0
+		 Yes/no percentage: error: no questions%
+
+Witness: SABRINA THOMAS
+	Examiner: JAFFE
+		 Yes/no questions: 0
+		 Total questions: 0
+		 Yes/no percentage: error: no questions%
+	Examiner: ARNOLD
+		 Yes/no questions: 0
+		 Total questions: 0
+		 Yes/no percentage: error: no questions%
+
+Witness: EVA HUNTER
+	Examiner: JAFFE
+		 Yes/no questions: 0
+		 Total questions: 0
+		 Yes/no percentage: error: no questions%
+	Examiner: ARNOLD
+		 Yes/no questions: 0
+		 Total questions: 0
+		 Yes/no percentage: error: no questions%
+
