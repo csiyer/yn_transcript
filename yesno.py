@@ -20,7 +20,7 @@ Updated: 6/13/2024
 
 ############################### CHANGE THESE IN ORDER TO RUN ##############################
 dir_path = "example_transcripts" 
-THOROUGH_LONGER_VERSION = False # if true, this script queries GPT more times, and gets a slower but potentially better count
+THOROUGH_LONGER_VERSION = False # CURRENTLY CRASHES IF TRUE (runs too long) -- if true, this script queries GPT more times, and gets a slower but potentially better count
 ###########################################################################################
 
 

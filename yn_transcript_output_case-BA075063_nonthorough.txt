@@ -1,0 +1,589 @@
+Witness Yes/No Question Statistics 
+***WARNING: these numbers are VERY rough estimates***
+
+Witness: REGIS DEON THOMAS
+
+Witness: WILMER ABRAM
+	Examiner: ARNOLD
+		 Yes/no questions: 17
+		 Total questions: 40
+		 Yes/no percentage: 42.5%
+	Examiner: JAFFE
+		 Yes/no questions: 16
+		 Total questions: 22
+		 Yes/no percentage: 72.73%
+
+Witness: JANICE CHAPPELL
+	Examiner: ARNOLD
+		 Yes/no questions: 178
+		 Total questions: 339
+		 Yes/no percentage: 52.51%
+	Examiner: JAFFE
+		 Yes/no questions: 157
+		 Total questions: 231
+		 Yes/no percentage: 67.97%
+
+Witness: BERTRAND DICKSON
+	Examiner: ARNOLD
+		 Yes/no questions: 293
+		 Total questions: 646
+		 Yes/no percentage: 45.36%
+	Examiner: JAFFE
+		 Yes/no questions: 210
+		 Total questions: 367
+		 Yes/no percentage: 57.22%
+
+Witness: DEANNA BENEDICT
+	Examiner: ARNOLD
+		 Yes/no questions: 43
+		 Total questions: 71
+		 Yes/no percentage: 60.56%
+	Examiner: JAFFE
+		 Yes/no questions: 45
+		 Total questions: 77
+		 Yes/no percentage: 58.44%
+
+Witness: ROBERT PETERSON
+	Examiner: ARNOLD
+		 Yes/no questions: 150
+		 Total questions: 284
+		 Yes/no percentage: 52.82%
+	Examiner: JAFFE
+		 Yes/no questions: 86
+		 Total questions: 157
+		 Yes/no percentage: 54.78%
+
+Witness: PEDRO ORTIZ
+	Examiner: ARNOLD
+		 Yes/no questions: 27
+		 Total questions: 71
+		 Yes/no percentage: 38.03%
+	Examiner: JAFFE
+		 Yes/no questions: 20
+		 Total questions: 40
+		 Yes/no percentage: 50.0%
+
+Witness: MARK WAYNE BUSTER
+	Examiner: ARNOLD
+		 Yes/no questions: 36
+		 Total questions: 59
+		 Yes/no percentage: 61.02%
+
+Witness: LARRY JOHNSON
+	Examiner: ARNOLD
+		 Yes/no questions: 29
+		 Total questions: 58
+		 Yes/no percentage: 50.0%
+	Examiner: JAFFE
+		 Yes/no questions: 23
+		 Total questions: 55
+		 Yes/no percentage: 41.82%
+
+Witness: JOHNNIE MACK GOODMAN
+	Examiner: ARNOLD
+		 Yes/no questions: 70
+		 Total questions: 126
+		 Yes/no percentage: 55.56%
+	Examiner: JAFFE
+		 Yes/no questions: 12
+		 Total questions: 20
+		 Yes/no percentage: 60.0%
+
+Witness: EDDIE COLE
+	Examiner: ARNOLD
+		 Yes/no questions: 33
+		 Total questions: 57
+		 Yes/no percentage: 57.89%
+	Examiner: JAFFE
+		 Yes/no questions: 10
+		 Total questions: 19
+		 Yes/no percentage: 52.63%
+
+Witness: DWIGHT VAN HORN
+	Examiner: ARNOLD
+		 Yes/no questions: 122
+		 Total questions: 216
+		 Yes/no percentage: 56.48%
+	Examiner: JAFFE
+		 Yes/no questions: 7
+		 Total questions: 12
+		 Yes/no percentage: 58.33%
+
+Witness: MARGARETTA GULLY
+	Examiner: ARNOLD
+		 Yes/no questions: 265
+		 Total questions: 472
+		 Yes/no percentage: 56.14%
+	Examiner: JAFFE
+		 Yes/no questions: 231
+		 Total questions: 392
+		 Yes/no percentage: 58.93%
+	Examiner: BRANSCOMB
+		 Yes/no questions: 14
+		 Total questions: 27
+		 Yes/no percentage: 51.85%
+
+Witness: MARVIN BRANSCOMB
+	Examiner: ARNOLD
+		 Yes/no questions: 7
+		 Total questions: 19
+		 Yes/no percentage: 36.84%
+
+Witness: DEMORYEA POLIDORE
+	Examiner: ARNOLD
+		 Yes/no questions: 284
+		 Total questions: 517
+		 Yes/no percentage: 54.93%
+	Examiner: JAFFE
+		 Yes/no questions: 147
+		 Total questions: 209
+		 Yes/no percentage: 70.33%
+
+Witness: JOHN SHANNON
+	Examiner: ARNOLD
+		 Yes/no questions: 11
+		 Total questions: 35
+		 Yes/no percentage: 31.43%
+	Examiner: JAFFE
+		 Yes/no questions: 10
+		 Total questions: 25
+		 Yes/no percentage: 40.0%
+
+Witness: BOBBIE HARRIS
+	Examiner: ARNOLD
+		 Yes/no questions: 75
+		 Total questions: 148
+		 Yes/no percentage: 50.68%
+
+Witness: ALICIA JORDAN
+	Examiner: ARNOLD
+		 Yes/no questions: 432
+		 Total questions: 718
+		 Yes/no percentage: 60.17%
+	Examiner: JAFFE
+		 Yes/no questions: 268
+		 Total questions: 401
+		 Yes/no percentage: 66.83%
+
+Witness: INGRID CREAR
+	Examiner: ARNOLD
+		 Yes/no questions: 47
+		 Total questions: 80
+		 Yes/no percentage: 58.75%
+	Examiner: JAFFE
+		 Yes/no questions: 7
+		 Total questions: 17
+		 Yes/no percentage: 41.18%
+
+Witness: NICOLE PRINCE
+	Examiner: ARNOLD
+		 Yes/no questions: 26
+		 Total questions: 42
+		 Yes/no percentage: 61.9%
+	Examiner: JAFFE
+		 Yes/no questions: 43
+		 Total questions: 51
+		 Yes/no percentage: 84.31%
+
+Witness: MARK METCALF
+	Examiner: ARNOLD
+		 Yes/no questions: 78
+		 Total questions: 158
+		 Yes/no percentage: 49.37%
+	Examiner: JAFFE
+		 Yes/no questions: 23
+		 Total questions: 60
+		 Yes/no percentage: 38.33%
+
+Witness: DOUGLAS SLAUGHTER
+	Examiner: ARNOLD
+		 Yes/no questions: 53
+		 Total questions: 107
+		 Yes/no percentage: 49.53%
+	Examiner: JAFFE
+		 Yes/no questions: 5
+		 Total questions: 18
+		 Yes/no percentage: 27.78%
+
+Witness: FREDERICK DOUGLAS REYNOLDS
+	Examiner: ARNOLD
+		 Yes/no questions: 73
+		 Total questions: 163
+		 Yes/no percentage: 44.79%
+	Examiner: JAFFE
+		 Yes/no questions: 11
+		 Total questions: 23
+		 Yes/no percentage: 47.83%
+
+Witness: DONG LEE
+	Examiner: ARNOLD
+		 Yes/no questions: 113
+		 Total questions: 185
+		 Yes/no percentage: 61.08%
+	Examiner: JAFFE
+		 Yes/no questions: 61
+		 Total questions: 82
+		 Yes/no percentage: 74.39%
+
+Witness: KEYON PYE
+	Examiner: ARNOLD
+		 Yes/no questions: 206
+		 Total questions: 388
+		 Yes/no percentage: 53.09%
+	Examiner: JAFFE
+		 Yes/no questions: 48
+		 Total questions: 72
+		 Yes/no percentage: 66.67%
+
+Witness: MICHAEL LOPEZ
+	Examiner: ARNOLD
+		 Yes/no questions: 30
+		 Total questions: 56
+		 Yes/no percentage: 53.57%
+	Examiner: JAFFE
+		 Yes/no questions: 19
+		 Total questions: 24
+		 Yes/no percentage: 79.17%
+
+Witness: SUSAN YOUNT
+	Examiner: ARNOLD
+		 Yes/no questions: 42
+		 Total questions: 89
+		 Yes/no percentage: 47.19%
+	Examiner: JAFFE
+		 Yes/no questions: 26
+		 Total questions: 51
+		 Yes/no percentage: 50.98%
+
+Witness: DWIGHT H DOBBIN
+	Examiner: ARNOLD
+		 Yes/no questions: 28
+		 Total questions: 54
+		 Yes/no percentage: 51.85%
+
+Witness: LARRY JOSEPH BRANDENBURG
+	Examiner: ARNOLD
+		 Yes/no questions: 123
+		 Total questions: 290
+		 Yes/no percentage: 42.41%
+	Examiner: JAFFE
+		 Yes/no questions: 62
+		 Total questions: 129
+		 Yes/no percentage: 48.06%
+
+Witness: DESHAUNNA CODY THOMAS
+	Examiner: ARNOLD
+		 Yes/no questions: 331
+		 Total questions: 505
+		 Yes/no percentage: 65.54%
+	Examiner: JAFFE
+		 Yes/no questions: 137
+		 Total questions: 205
+		 Yes/no percentage: 66.83%
+
+Witness: CALVIN COOKSEY
+
+Witness: THOMAS MATTHEW THOMPSON
+	Examiner: ARNOLD
+		 Yes/no questions: 16
+		 Total questions: 43
+		 Yes/no percentage: 37.21%
+	Examiner: JAFFE
+		 Yes/no questions: 16
+		 Total questions: 21
+		 Yes/no percentage: 76.19%
+
+Witness: CALVIN EDWARD COOKSEY
+	Examiner: JAFFE
+		 Yes/no questions: 179
+		 Total questions: 390
+		 Yes/no percentage: 45.9%
+	Examiner: ARNOLD
+		 Yes/no questions: 328
+		 Total questions: 682
+		 Yes/no percentage: 48.09%
+
+Witness: WILLIAM JACKSON
+	Examiner: ARNOLD
+		 Yes/no questions: 49
+		 Total questions: 110
+		 Yes/no percentage: 44.55%
+
+Witness: SHAMICA HARGRAVE
+	Examiner: ARNOLD
+		 Yes/no questions: 145
+		 Total questions: 262
+		 Yes/no percentage: 55.34%
+	Examiner: JAFFE
+		 Yes/no questions: 32
+		 Total questions: 44
+		 Yes/no percentage: 72.73%
+
+Witness: HOURIE L TAYLOR
+	Examiner: ARNOLD
+		 Yes/no questions: 36
+		 Total questions: 73
+		 Yes/no percentage: 49.32%
+
+Witness: ROBERT ROJAS
+	Examiner: ARNOLD
+		 Yes/no questions: 123
+		 Total questions: 208
+		 Yes/no percentage: 59.13%
+	Examiner: JAFFE
+		 Yes/no questions: 31
+		 Total questions: 45
+		 Yes/no percentage: 68.89%
+
+Witness: RONALD DUVAL
+	Examiner: JAFFE
+		 Yes/no questions: 38
+		 Total questions: 69
+		 Yes/no percentage: 55.07%
+	Examiner: ARNOLD
+		 Yes/no questions: 96
+		 Total questions: 181
+		 Yes/no percentage: 53.04%
+
+Witness: TIMOTHY MILEY
+	Examiner: ARNOLD
+		 Yes/no questions: 51
+		 Total questions: 102
+		 Yes/no percentage: 50.0%
+
+Witness: JAMES RIBE
+	Examiner: ARNOLD
+		 Yes/no questions: 118
+		 Total questions: 204
+		 Yes/no percentage: 57.84%
+	Examiner: JAFFE
+		 Yes/no questions: 8
+		 Total questions: 18
+		 Yes/no percentage: 44.44%
+
+Witness: WILLIAM VICARY
+	Examiner: JAFFE
+		 Yes/no questions: 14
+		 Total questions: 27
+		 Yes/no percentage: 51.85%
+	Examiner: ARNOLD
+		 Yes/no questions: 80
+		 Total questions: 168
+		 Yes/no percentage: 47.62%
+	Examiner: JAPVE
+		 Yes/no questions: 5
+		 Total questions: 11
+		 Yes/no percentage: 45.45%
+
+Witness: ARNOLD URIAS VILLARUEL
+	Examiner: JAFFE
+		 Yes/no questions: 8
+		 Total questions: 11
+		 Yes/no percentage: 72.73%
+	Examiner: ARNOLD
+		 Yes/no questions: 8
+		 Total questions: 11
+		 Yes/no percentage: 72.73%
+
+Witness: MARVIN EUGENE BRANSCOMB
+	Examiner: JAFFE
+		 Yes/no questions: 31
+		 Total questions: 44
+		 Yes/no percentage: 70.45%
+	Examiner: ARNOLD
+		 Yes/no questions: 27
+		 Total questions: 50
+		 Yes/no percentage: 54.0%
+
+Witness: MICHAEL BUMCROT
+	Examiner: JAFFE
+		 Yes/no questions: 12
+		 Total questions: 24
+		 Yes/no percentage: 50.0%
+	Examiner: ARNOLD
+		 Yes/no questions: 9
+		 Total questions: 21
+		 Yes/no percentage: 42.86%
+
+Witness: GISELE LAVIGNE
+	Examiner: JAFFE
+		 Yes/no questions: 6
+		 Total questions: 20
+		 Yes/no percentage: 30.0%
+	Examiner: ARNOLD
+		 Yes/no questions: 2
+		 Total questions: 5
+		 Yes/no percentage: 40.0%
+
+Witness: LYNNE DENISE HEROLD
+	Examiner: JAFFE
+		 Yes/no questions: 33
+		 Total questions: 73
+		 Yes/no percentage: 45.21%
+	Examiner: ARNOLD
+		 Yes/no questions: 20
+		 Total questions: 40
+		 Yes/no percentage: 50.0%
+
+Witness: STEVEN JUDD
+	Examiner: ARNOLD
+		 Yes/no questions: 38
+		 Total questions: 109
+		 Yes/no percentage: 34.86%
+	Examiner: JAFFE
+		 Yes/no questions: 2
+		 Total questions: 4
+		 Yes/no percentage: 50.0%
+
+Witness: GEORGE HOLT
+	Examiner: ARNOLD
+		 Yes/no questions: 31
+		 Total questions: 86
+		 Yes/no percentage: 36.05%
+	Examiner: JAFFE
+		 Yes/no questions: 12
+		 Total questions: 25
+		 Yes/no percentage: 48.0%
+
+Witness: WILLIE MAE ADKINS
+	Examiner: ARNOLD
+		 Yes/no questions: 28
+		 Total questions: 63
+		 Yes/no percentage: 44.44%
+
+Witness: DALICIA ADKINS
+	Examiner: ARNOLD
+		 Yes/no questions: 16
+		 Total questions: 47
+		 Yes/no percentage: 34.04%
+
+Witness: JAMES MACDONALD
+	Examiner: ARNOLD
+		 Yes/no questions: 27
+		 Total questions: 86
+		 Yes/no percentage: 31.4%
+
+Witness: TONIA MACDONALD
+	Examiner: ARNOLD
+		 Yes/no questions: 14
+		 Total questions: 47
+		 Yes/no percentage: 29.79%
+
+Witness: CLARK BURRELL
+	Examiner: ARNOLD
+		 Yes/no questions: 37
+		 Total questions: 125
+		 Yes/no percentage: 29.6%
+
+Witness: EDNA BURRELL
+	Examiner: ARNOLD
+		 Yes/no questions: 19
+		 Total questions: 37
+		 Yes/no percentage: 51.35%
+
+Witness: KAWASCI JACKSON
+	Examiner: JAFFE
+		 Yes/no questions: 68
+		 Total questions: 103
+		 Yes/no percentage: 66.02%
+	Examiner: ARNOLD
+		 Yes/no questions: 50
+		 Total questions: 87
+		 Yes/no percentage: 57.47%
+
+Witness: WILLIE RILEY
+	Examiner: JAFFE
+		 Yes/no questions: 47
+		 Total questions: 95
+		 Yes/no percentage: 49.47%
+	Examiner: ARNOLD
+		 Yes/no questions: 27
+		 Total questions: 50
+		 Yes/no percentage: 54.0%
+
+Witness: KIM GRAHAM
+	Examiner: JAFFE
+		 Yes/no questions: 25
+		 Total questions: 40
+		 Yes/no percentage: 62.5%
+	Examiner: ARNOLD
+		 Yes/no questions: 25
+		 Total questions: 45
+		 Yes/no percentage: 55.56%
+
+Witness: IRIS THOMAS
+	Examiner: JAFFE
+		 Yes/no questions: 52
+		 Total questions: 117
+		 Yes/no percentage: 44.44%
+	Examiner: ARNOLD
+		 Yes/no questions: 15
+		 Total questions: 50
+		 Yes/no percentage: 30.0%
+
+Witness: SHEILA GRIGGS
+	Examiner: JAFFE
+		 Yes/no questions: 42
+		 Total questions: 85
+		 Yes/no percentage: 49.41%
+	Examiner: ARNOLD
+		 Yes/no questions: 18
+		 Total questions: 47
+		 Yes/no percentage: 38.3%
+
+Witness: PATRICIA MOSLEY
+	Examiner: JAFFE
+		 Yes/no questions: 28
+		 Total questions: 52
+		 Yes/no percentage: 53.85%
+	Examiner: ARNOLD
+		 Yes/no questions: 10
+		 Total questions: 25
+		 Yes/no percentage: 40.0%
+
+Witness: DANIEL WELLS
+	Examiner: JAFFE
+		 Yes/no questions: 38
+		 Total questions: 46
+		 Yes/no percentage: 82.61%
+
+Witness: KATHERINE MOSLEY
+	Examiner: JAFFE
+		 Yes/no questions: 17
+		 Total questions: 37
+		 Yes/no percentage: 45.95%
+	Examiner: ARNOLD
+		 Yes/no questions: 11
+		 Total questions: 25
+		 Yes/no percentage: 44.0%
+
+Witness: MICHELLE RIGMADEN
+	Examiner: JAFFE
+		 Yes/no questions: 17
+		 Total questions: 32
+		 Yes/no percentage: 53.12%
+	Examiner: ARNOLD
+		 Yes/no questions: 6
+		 Total questions: 11
+		 Yes/no percentage: 54.55%
+
+Witness: SABRINA THOMAS
+	Examiner: JAFFE
+		 Yes/no questions: 12
+		 Total questions: 30
+		 Yes/no percentage: 40.0%
+	Examiner: ARNOLD
+		 Yes/no questions: 26
+		 Total questions: 48
+		 Yes/no percentage: 54.17%
+
+Witness: EVA HUNTER
+	Examiner: JAFFE
+		 Yes/no questions: 36
+		 Total questions: 65
+		 Yes/no percentage: 55.38%
+	Examiner: ARNOLD
+		 Yes/no questions: 16
+		 Total questions: 28
+		 Yes/no percentage: 57.14%
+
