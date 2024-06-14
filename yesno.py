@@ -1,23 +1,3 @@
-"""
-Script version of `yesno.ipynb`. 
-
-This code will read trial transcript PDFs and for each witness (and each questioner) quantify how many yes/no questions that witness is asked.
-
-Input: file path of folder containing transcript PDFs (currently, this should be run separately for each case/trial)
-Output: writes a text file containing witness statistics, for each examiner, of # of yes/no questions and # total questions
-
-NOTE: ***THIS DOES NOT WORK PERFECTLY***
-The main reason is that none of the python PDF readers I've seen work perfectly on our transcript PDFs, and they miss
-words/lines/characters that are important in parsing the text. 
-The secondary reason is that language is hard to parse, and, for example, there are some sentences that look like 
-yes/no questions in many ways but are not -- I will just no be able to perfectly identify them.
-
-Still, it works pretty well!
-
-Authors: Chris Iyer, Miles Zoltak
-Updated: 6/13/2024
-"""
-
 ############################### CHANGE THESE IN ORDER TO RUN ##############################
 dir_path = "example_transcripts" 
 THOROUGH_LONGER_VERSION = False # CURRENTLY CRASHES IF TRUE (runs too long) -- if true, this script queries GPT more times, and gets a slower but potentially better count
