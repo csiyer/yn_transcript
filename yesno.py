@@ -1,6 +1,6 @@
 ############################### CHANGE THESE IN ORDER TO RUN ##############################
 dir_path = "example_transcripts" 
-THOROUGH_LONGER_VERSION = False # CURRENTLY CRASHES IF TRUE (runs too long) -- if true, this script queries GPT more times, and gets a slower but potentially better count
+THOROUGH_LONGER_VERSION = False # if true, this script queries GPT more times, and gets a slower but potentially better count
 ###########################################################################################
 
 
@@ -9,12 +9,15 @@ THOROUGH_LONGER_VERSION = False # CURRENTLY CRASHES IF TRUE (runs too long) -- i
 # %pip install transformers
 # %pip install torch
 # %pip install openai
+# %pip install joblib
 
 import os, re
 from pypdf import PdfReader
 from tqdm import tqdm
 from datetime import datetime
 from openai import OpenAI
+from joblib import Parallel, delayed
+from collections import defaultdict
 
 ############################### DATA LOADING AND PROCESSING ###############################
 
@@ -160,79 +163,92 @@ def guess_examiner(witness_side, current_examination):
 
 
 #### LOOP THROUGH AND ANALYZE TRANSCRIPT
-name_to_stats = {}
 
-current_witness = ''
-current_witness_side = ''
-current_examination = ''
-current_examiner = ''
-active_question = ''
+# split this process into ranges of lines corresponding to each witness (to parallelize for speed)
+def process_one_range(range_of_lines, lines):
+    # initialize variables to be used as we loop
+    current_witness = ''
+    current_witness_side = ''
+    current_examination = ''
+    current_examiner = ''
+    active_question = ''
+    gpt_query_idxs = []
+    local_name_to_stats = defaultdict(lambda: defaultdict(lambda: {'total_questions': 0, 'yes_no_questions': 0})) # use default dict so we don't have to check if key already exists
 
-idxs = []
+    for i in range_of_lines:
+        line = lines[i]
 
-for i,line in tqdm(enumerate(lines), total=len(lines)):
-    if line_is_witness_identifier(lines, i):
-        current_witness = clean_simple_line(line)
-        current_witness_side = who_presents_this_witness(lines, i)
-        if current_witness not in name_to_stats.keys():
-            name_to_stats[current_witness] = {}
-        active_question = '' # just in case we get carried away
+        if line_is_witness_identifier(lines, i):
+            current_witness = clean_simple_line(line)
+            current_witness_side = who_presents_this_witness(lines, i)
+            active_question = '' # just in case we get carried away
 
-    elif line_is_examination_identifier(lines, i):
-        current_examiner = ''
-        current_examination = clean_simple_line(line)
-        active_question = ''
+        elif line_is_examination_identifier(lines, i):
+            current_examiner = ''
+            current_examination = clean_simple_line(line)
+            active_question = ''
 
-    elif line_is_examiner_identifier(line):
-        current_examiner = clean_examiner_name(line)
-        active_question = ''
+        elif line_is_examiner_identifier(line):
+            current_examiner = clean_examiner_name(line)
+            active_question = ''
 
-    # when we hit an answer, I want the active_question to be everything since the last question
-    elif starts_question(line, current_examiner):
-        active_question = line # start adding to active_question
+        elif starts_question(line, current_examiner): # when we eventually hit an answer, I want the active_question to contain everything since the last question started
+            active_question = line # start adding to active_question
 
-    elif is_answer(line):
-        if current_examiner == '': # error in pdf reading: no examiner info 
-            current_examiner = guess_examiner(current_witness_side, current_examination)
+        elif is_answer(line):
+            # we may need to guess necessary preceding info if there was an error in pdf reading
+            if current_examiner == '': 
+                current_examiner = guess_examiner(current_witness_side, current_examination) 
+            if active_question == '': 
+                active_question = guess_previous_question(lines, i) 
+                
+            if '?' in active_question: # to rule out things like "Q. Good morning."
+                local_name_to_stats[current_witness][current_examiner]['total_questions'] += 1
 
-        if active_question == '':
-            active_question = guess_previous_question(lines, i)
+                yes_no = is_yes_no_answer(lines, i, current_examiner)
 
-        if '?' in active_question: # to rule out things like "Q. Good morning."
-            if current_examiner not in name_to_stats[current_witness].keys():
-                name_to_stats[current_witness][current_examiner] = {'total_questions': 0, 'yes_no_questions': 0}
+                if yes_no == 'yes': 
+                    local_name_to_stats[current_witness][current_examiner]['yes_no_questions'] += 1
 
-            name_to_stats[current_witness][current_examiner]['total_questions'] += 1
+                # if we're being maximally thorough, or we're not but the yes_no function returned "maybe" -- query GPT 
+                elif THOROUGH_LONGER_VERSION or (not THOROUGH_LONGER_VERSION and yes_no=='maybe'): 
+                    gpt_query_idxs.append(i)
+                    local_name_to_stats[current_witness][current_examiner]['yes_no_questions'] += is_yes_no(active_question) # 1 if true, 0 if false
 
-            yes_no = is_yes_no_answer(lines, i, current_examiner)
+            active_question = '' # reset
 
-            if yes_no == 'yes':
-                name_to_stats[current_witness][current_examiner]['yes_no_questions'] += 1
-            elif THOROUGH_LONGER_VERSION and is_yes_no(active_question): # if going more thorough, query GPT with the previous question no matter what
-                idxs.append(i)
-                name_to_stats[current_witness][current_examiner]['yes_no_questions'] += 1
-            elif not THOROUGH_LONGER_VERSION and yes_no=='maybe' and is_yes_no(active_question): # if less thorough, only query GPT if yes_no returns "maybe"
-                idxs.append(i)
-                name_to_stats[current_witness][current_examiner]['yes_no_questions'] += 1
+        elif active_question:
+            active_question += line # if we started a question, add this line. resets at every answer or special identifying line
 
-        active_question = '' # reset
+    return dict(local_name_to_stats), gpt_query_idxs
 
-    elif active_question:
-        active_question += line # if we started a question, add this line. resets at every answer or special identifying line
 
-print(f'Finished transcript. Total number of lines needing GPT query: {len(idxs)} out of {len(lines)} ({round(len(idxs)/len(lines), 2)})')
+def merge_dicts(list_of_dicts):
+    main = defaultdict(lambda: defaultdict(lambda: {'total_questions': 0, 'yes_no_questions': 0}))
+    for d in list_of_dicts:
+        for witness, subdict in d.items():
+            for examiner, values in subdict.items():
+                main[witness][examiner]['total_questions'] += values['total_questions']
+                main[witness][examiner]['yes_no_questions'] += values['yes_no_questions']
+    return {k:dict(v) for k,v in main.items()}
+
+
+#### PROCESS ENTIRE TRANSCRIPT (in parallel)
+# find witness IDs to break the transcript into chunks, to hand each chunk to a separate cpu
+witness_breaks = [i for i in range(len(lines)) if line_is_witness_identifier(lines, i)] 
+witness_ranges = [range(0, witness_breaks[i]) if i == 0 else range(witness_breaks[i-1], witness_breaks[i]) for i in range(len(witness_breaks))]
+
+results = Parallel(n_jobs=-1)(delayed(process_one_range)(r, lines) for r in witness_ranges)
+
+name_to_stats = merge_dicts([r[0] for r in results])
+all_gpt_query_idxs = [idx for sublist in [r[1] for r in results] for idx in sublist]
+
+print(f'Finished transcript, saving output.')
 
 
 ############################### OUTPUT TXT FILE ###########################################
-
-def get_unique_id(lines):
-    for l in lines[0:30]:
-        if 'NO. ' in l: # case number
-            return 'case-' + l.split('NO. ')[1].strip()
-    return datetime.now().strftime('date-%Y-%m-%d_%H-%M')
-
-
 output_text = 'Witness Yes/No Question Statistics \n***WARNING: these numbers are VERY rough estimates***\n\n'
+output_text += f'Parameters: \n \t Thorough querying version?: {THOROUGH_LONGER_VERSION}, \n\t Total GPT queries: {len(all_gpt_query_idxs)}\n\n'
 
 for name,values in name_to_stats.items():
     output_text += f'Witness: {name}\n'
@@ -247,6 +263,12 @@ for name,values in name_to_stats.items():
              percentage = 'error: no questions'
         output_text += f'\t\t Yes/no percentage: {percentage}%\n'
     output_text += '\n'
+
+def get_unique_id(lines):
+    for l in lines[0:30]:
+        if 'NO. ' in l: # case number
+            return 'case-' + l.split('NO. ')[1].strip()
+    return datetime.now().strftime('date-%Y-%m-%d_%H-%M')
 
 thorough_tag = 'thorough' if THOROUGH_LONGER_VERSION  else 'nonthorough'
 
