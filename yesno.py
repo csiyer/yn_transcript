@@ -15,15 +15,20 @@ yes/no questions in many ways but are not -- I will just no be able to perfectly
 Still, it works pretty well!
 
 Authors: Chris Iyer, Miles Zoltak
-Updated: 5/24/2024
+Updated: 6/13/2024
 """
+
+############################### CHANGE THESE IN ORDER TO RUN ##############################
+dir_path = "example_transcripts" 
+THOROUGH_LONGER_VERSION = False # if true, this script queries GPT more times, and gets a slower but potentially better count
+###########################################################################################
+
 
 # %pip install pypdf
 # %pip install tqdm
 # %pip install transformers
 # %pip install torch
 # %pip install openai
-
 
 import os, re
 from pypdf import PdfReader
@@ -33,7 +38,6 @@ from openai import OpenAI
 
 ############################### DATA LOADING AND PROCESSING ###############################
 
-dir_path = "example_transcripts"
 files = [f for f in sorted(os.listdir(dir_path))]
 
 # Read all the PDFs into a huge string, and then split into a big list of lines
@@ -94,10 +98,10 @@ def line_is_examination_identifier(lines, i):
         )
 
 def is_answer(line):
-    return line.strip().startswith('A. ') # or line.strip().startswith('THE WITNESS:')
+    return  re.sub(r'[^a-zA-Z. ]', '', line).strip().startswith('A. ') # or line.strip().startswith('THE WITNESS:')
 
 def starts_question(text, current_examiner):
-    return any(item in text for item in ['Q. ', 'Q . ', 'Q• ', 'Q • ', current_examiner+':'])# and '?' in text
+    return any(item in text for item in ['Q. ', 'Q . ', 'Q• ', 'Q • ', current_examiner+':']) # and '?' in text
 
 def guess_previous_question(lines, i):
     # if the previous question was not read in properly with 'Q.', then we want to parse what the question was when we hit an answer
@@ -117,9 +121,11 @@ def is_yes_no_answer(lines,i,current_examiner):
         answer += nextline
 
     answer_split = re.sub(r'[^A-Za-z ]', '', answer).upper().strip().split(' ')
-    if any(item in answer_split for item in ['YES', 'YEAH', 'NO', 'NOPE']):
+    if any(item in answer_split for item in ['YES', 'YEAH', 'YEP', 'NO', 'NOPE', 'UHHUH', 'UHUH', 'UMHUM', 'UMUM']) or 'NOT' in answer_split[0:3]:
         if len(answer_split) < 8:
             return 'yes'
+        return 'maybe'
+    if len(answer_split) < 5:
         return 'maybe'
     return 'no'
 
@@ -184,7 +190,7 @@ active_question = ''
 
 idxs = []
 
-for i,line in enumerate(lines):
+for i,line in tqdm(enumerate(lines), total=len(lines)):
     if line_is_witness_identifier(lines, i):
         current_witness = clean_simple_line(line)
         current_witness_side = who_presents_this_witness(lines, i)
@@ -196,8 +202,6 @@ for i,line in enumerate(lines):
         current_examiner = ''
         current_examination = clean_simple_line(line)
         active_question = ''
-        if current_witness == 'DESHAUNNA CODY THOMAS':
-            idxs.append(i)
 
     elif line_is_examiner_identifier(line):
         current_examiner = clean_examiner_name(line)
@@ -221,10 +225,13 @@ for i,line in enumerate(lines):
             name_to_stats[current_witness][current_examiner]['total_questions'] += 1
 
             yes_no = is_yes_no_answer(lines, i, current_examiner)
+
             if yes_no == 'yes':
                 name_to_stats[current_witness][current_examiner]['yes_no_questions'] += 1
-
-            elif yes_no == 'maybe' and is_yes_no(active_question): # query gpt only if we have to
+            elif THOROUGH_LONGER_VERSION and is_yes_no(active_question): # if going more thorough, query GPT with the previous question no matter what
+                idxs.append(i)
+                name_to_stats[current_witness][current_examiner]['yes_no_questions'] += 1
+            elif not THOROUGH_LONGER_VERSION and yes_no=='maybe' and is_yes_no(active_question): # if less thorough, only query GPT if yes_no returns "maybe"
                 idxs.append(i)
                 name_to_stats[current_witness][current_examiner]['yes_no_questions'] += 1
 
@@ -233,8 +240,6 @@ for i,line in enumerate(lines):
     elif active_question:
         active_question += line # if we started a question, add this line. resets at every answer or special identifying line
 
-    if i % 10000 == 0:
-        print(i)
 print(f'Finished transcript. Total number of lines needing GPT query: {len(idxs)} out of {len(lines)} ({round(len(idxs)/len(lines), 2)})')
 
 
@@ -247,7 +252,7 @@ def get_unique_id(lines):
     return datetime.now().strftime('date-%Y-%m-%d_%H-%M')
 
 
-output_text = 'Witness Yes/No Question Statistics \n\n'
+output_text = 'Witness Yes/No Question Statistics \n***WARNING: these numbers are VERY rough estimates***\n\n'
 
 for name,values in name_to_stats.items():
     output_text += f'Witness: {name}\n'
@@ -263,5 +268,7 @@ for name,values in name_to_stats.items():
         output_text += f'\t\t Yes/no percentage: {percentage}%\n'
     output_text += '\n'
 
-with open(f'yn_transcript_output_{get_unique_id(lines)}.txt', 'w') as file: # CHANGE FILENAME TO UNIQUE ID
+thorough_tag = 'thorough' if THOROUGH_LONGER_VERSION  else 'nonthorough'
+
+with open(f'yn_transcript_output_{get_unique_id(lines)}_{thorough_tag}.txt', 'w') as file: # CHANGE FILENAME TO UNIQUE ID
     file.write(output_text)
