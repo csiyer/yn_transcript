@@ -1,9 +1,3 @@
-############################### CHANGE THESE IN ORDER TO RUN ##############################
-dir_path = "example_transcripts" 
-THOROUGH_LONGER_VERSION = False # if true, this script queries GPT more times, and gets a slower but potentially better count
-###########################################################################################
-
-
 # %pip install pypdf
 # %pip install tqdm
 # %pip install transformers
@@ -11,23 +5,44 @@ THOROUGH_LONGER_VERSION = False # if true, this script queries GPT more times, a
 # %pip install openai
 # %pip install joblib
 
-import os, re
+import os, re, argparse
+from datetime import datetime
 from pypdf import PdfReader
 from tqdm import tqdm
-from datetime import datetime
 from openai import OpenAI
 from joblib import Parallel, delayed
 from collections import defaultdict
 
+############################### PROCESS COMMAND LINE ARGUMENTS ############################
+
+parser = argparse.ArgumentParser(description='Transcript yes/no analysis.')
+parser.add_argument('path', type=str, help='Path to the input directory of transcript files.')
+parser.add_argument('-o', '--openai_key', dest='openai_key', help='OpenAI API key (alternative: save to a file called key.txt in this directory!)')
+parser.add_argument('--thorough', dest='thorough_bool', action='store_true', help='If flagged, this script will query GPT more times--a more thorough but slower verison.')
+args = parser.parse_args()
+
+INPUT_DIRECTORY_PATH = args.path
+THOROUGH_BOOL = args.thorough_bool
+if args.openai_key:
+    OPENAI_KEY = args.openai_key
+else: 
+    with open('key.txt','r') as f: 
+        OPENAI_KEY = f.read()
+print(OPENAI_KEY)
+
+print(f'Accessing input files at: {INPUT_DIRECTORY_PATH}')
+print(f'Thorough version?: {THOROUGH_BOOL}')
+print(f'API KEY: {OPENAI_KEY}')
+
 ############################### DATA LOADING AND PROCESSING ###############################
 
-files = [f for f in sorted(os.listdir(dir_path))]
+files = [f for f in sorted(os.listdir(INPUT_DIRECTORY_PATH))]
 
 # Read all the PDFs into a huge string, and then split into a big list of lines
 entire_transcript = ""
 print('Processing PDFs to text...')
 for file in tqdm(files, total=len(files)):
-  reader = PdfReader(os.path.join(dir_path, file))
+  reader = PdfReader(os.path.join(INPUT_DIRECTORY_PATH, file))
   for page in reader.pages:
     entire_transcript += page.extract_text() + '\n'
 print('finished!\n')
@@ -112,11 +127,9 @@ def is_yes_no_answer(lines,i,current_examiner):
         return 'maybe'
     return 'no'
 
-def is_yes_no(question):
+def is_yes_no(question, OPENAI_KEY):
     # returns true if the question is a yes/no question. queries GPT to do so!
-    with open('key.txt', 'r') as f:
-        KEY = f.read()
-    client = OpenAI(api_key=KEY)
+    client = OpenAI(api_key=OPENAI_KEY)
 
     completion = client.chat.completions.create(
         model="gpt-3.5-turbo",
@@ -211,9 +224,9 @@ def process_one_range(range_of_lines, lines):
                     local_name_to_stats[current_witness][current_examiner]['yes_no_questions'] += 1
 
                 # if we're being maximally thorough, or we're not but the yes_no function returned "maybe" -- query GPT 
-                elif THOROUGH_LONGER_VERSION or (not THOROUGH_LONGER_VERSION and yes_no=='maybe'): 
+                elif THOROUGH_BOOL or (not THOROUGH_BOOL and yes_no=='maybe'): 
                     gpt_query_idxs.append(i)
-                    local_name_to_stats[current_witness][current_examiner]['yes_no_questions'] += is_yes_no(active_question) # 1 if true, 0 if false
+                    local_name_to_stats[current_witness][current_examiner]['yes_no_questions'] += is_yes_no(active_question, OPENAI_KEY) # 1 if true, 0 if false
 
             active_question = '' # reset
 
@@ -234,7 +247,7 @@ def merge_dicts(list_of_dicts):
 
 
 #### PROCESS ENTIRE TRANSCRIPT (in parallel)
-# find witness IDs to break the transcript into chunks, to hand each chunk to a separate cpu
+# find witness IDs to break the transcript into chunks, to hand each chunk to a separate core
 witness_breaks = [i for i in range(len(lines)) if line_is_witness_identifier(lines, i)] 
 witness_ranges = [range(0, witness_breaks[i]) if i == 0 else range(witness_breaks[i-1], witness_breaks[i]) for i in range(len(witness_breaks))]
 
@@ -247,22 +260,18 @@ print(f'Finished transcript, saving output.')
 
 
 ############################### OUTPUT TXT FILE ###########################################
-output_text = 'Witness Yes/No Question Statistics \n***WARNING: these numbers are VERY rough estimates***\n\n'
-output_text += f'Parameters: \n \t Thorough querying version?: {THOROUGH_LONGER_VERSION}, \n\t Total GPT queries: {len(all_gpt_query_idxs)}\n\n'
+
+output_csv_text = 'Witness,Examiner,Total questions,Yes/No Questions,Yes/No Percentage\n'
 
 for name,values in name_to_stats.items():
-    output_text += f'Witness: {name}\n'
     for examiner, stats in values.items():
-        output_text += f'\tExaminer: {examiner}\n'
-        output_text += f'\t\t Yes/no questions: {stats["yes_no_questions"]}\n'
-        output_text += f'\t\t Total questions: {stats["total_questions"]}\n'
-
+        output_csv_text += f'{name},{examiner},{stats["yes_no_questions"]},{stats["total_questions"]},'
         try:
             percentage = round(stats['yes_no_questions'] / stats['total_questions'] * 100, 2)
         except:
-             percentage = 'error: no questions'
-        output_text += f'\t\t Yes/no percentage: {percentage}%\n'
-    output_text += '\n'
+             percentage = 'N/A'
+        output_csv_text += f'{percentage}\n'
+    output_csv_text += '\n'
 
 def get_unique_id(lines):
     for l in lines[0:30]:
@@ -270,7 +279,7 @@ def get_unique_id(lines):
             return 'case-' + l.split('NO. ')[1].strip()
     return datetime.now().strftime('date-%Y-%m-%d_%H-%M')
 
-thorough_tag = 'thorough' if THOROUGH_LONGER_VERSION  else 'nonthorough'
+thorough_tag = 'thorough' if THOROUGH_BOOL  else 'nonthorough'
 
-with open(f'yn_transcript_output_{get_unique_id(lines)}_{thorough_tag}.txt', 'w') as file: # CHANGE FILENAME TO UNIQUE ID
-    file.write(output_text)
+with open(f'yn_transcript_output_{get_unique_id(lines)}_{thorough_tag}.csv', 'w') as file: # CHANGE FILENAME TO UNIQUE ID
+    file.write(output_csv_text)
