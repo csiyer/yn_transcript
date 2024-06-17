@@ -280,6 +280,7 @@ def get_unique_id(lines):
     return datetime.now().strftime('date-%Y-%m-%d_%H-%M')
 
 thorough_tag = 'thorough' if THOROUGH_BOOL  else 'nonthorough'
+output_path = os.path.join(INPUT_DIRECTORY_PATH, f'yesno_analysis_{get_unique_id(lines)}_{thorough_tag}.csv')
 
-with open(f'yn_transcript_output_{get_unique_id(lines)}_{thorough_tag}.csv', 'w') as file: # CHANGE FILENAME TO UNIQUE ID
+with open(output_path, 'w') as file: # CHANGE FILENAME TO UNIQUE ID
     file.write(output_csv_text)
