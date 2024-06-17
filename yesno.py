@@ -32,7 +32,6 @@ print(OPENAI_KEY)
 
 print(f'Accessing input files at: {INPUT_DIRECTORY_PATH}')
 print(f'Thorough version?: {THOROUGH_BOOL}')
-print(f'API KEY: {OPENAI_KEY}')
 
 ############################### DATA LOADING AND PROCESSING ###############################
 
