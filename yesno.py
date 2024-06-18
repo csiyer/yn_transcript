@@ -270,7 +270,6 @@ for name,values in name_to_stats.items():
         except:
              percentage = 'N/A'
         output_csv_text += f'{percentage}\n'
-    output_csv_text += '\n'
 
 def get_unique_id(lines):
     for l in lines[0:30]:

@@ -8,7 +8,7 @@ To run:
 - Install necessary dependencies. If you would like to use the same python virtual environment I used, follow instructions [here](https://python.land/virtual-environments/virtualenv#How_to_create_a_Python_venv) to create a virtual environment using `Python 3.12.3` and the `requirements.txt` file found in this folder.
 - Run `yesno.py` from any shell / command line with the following format: `python yesno.ipynb /path/to/input/directory`
 - You will have to generate an OpenAI secret API key on the [OpenAI website](https://platform.openai.com/api-keys). The key can either be saved locally to a file called `key.txt` in this folder, that will be read automatically by the script. Or, you can introduce the key in the command line call below by adding `--openai_key=API_KEY_HERE`.
-- Lastly, you can add a flag `--thorough` to run a more thorough version, which queries GPT more times (better) but is much slower.
+- Lastly, you can add a flag `--thorough` to run a more thorough version, which queries GPT more times (better) but is a bit slower. It is recommended to use this flag!
 
 The script will produce an output CSV file containing: for each witness, for each examiner (defense/prosecution), the # of yes/no questions and the # of total questions asked.
 
