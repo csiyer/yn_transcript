@@ -17,5 +17,5 @@ PLEASE NOTE: This does not work perfectly!! There are two reasons:
 2. Every python PDF reader is imperfect, and misses words/lines/characters that are important in parsing the text. 
 
 
-Author: Chris Iyer, Habeas Corpus Resource Center
+Author: Chris Iyer
 Updated: 6/17/24
