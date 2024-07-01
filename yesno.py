@@ -10,8 +10,9 @@ from datetime import datetime
 from pypdf import PdfReader
 from tqdm import tqdm
 from openai import OpenAI
-from joblib import Parallel, delayed
 from collections import defaultdict
+from concurrent.futures import ThreadPoolExecutor
+
 
 ############################### PROCESS COMMAND LINE ARGUMENTS ############################
 
@@ -35,7 +36,7 @@ print(f'Thorough version?: {THOROUGH_BOOL}')
 
 ############################### DATA LOADING AND PROCESSING ###############################
 
-files = [f for f in sorted(os.listdir(INPUT_DIRECTORY_PATH))]
+files = [f for f in sorted(os.listdir(INPUT_DIRECTORY_PATH)) if '.pdf' in f]
 
 # Read all the PDFs into a huge string, and then split into a big list of lines
 entire_transcript = ""
@@ -61,6 +62,13 @@ def delete_numbers_whitespace(text):
 def clean_simple_line(line):
     # removes punctuation/numbers/non-letters
     return re.sub(r'[^a-zA-Z\s]', '', line).upper().strip() 
+
+def clean_question(question):
+    # mainly to delete "Q." and \t and whitespace
+    clean =  re.sub(r'[\t\n\"]', ' ', question) 
+    clean = re.sub(r'Q\.', '', clean)  
+    clean = re.sub(r'\s+', ' ', clean)
+    return clean.upper().strip()
 
 def line_is_witness_identifier(lines, i):
     line = clean_simple_line(lines[i])
@@ -95,7 +103,7 @@ def line_is_examination_identifier(lines, i):
         )
 
 def is_answer(line):
-    return  re.sub(r'[^a-zA-Z. ]', '', line).strip().startswith('A. ') # or line.strip().startswith('THE WITNESS:')
+    return  re.sub(r'[^a-zA-Z. ]', '', line).strip().startswith('A. ') and not re.sub(r'[^a-zA-Z\.]', '', line).startswith('A.M.')# or line.strip().startswith('THE WITNESS:')
 
 def starts_question(text, current_examiner):
     return any(item in text for item in ['Q. ', 'Q . ', 'Q• ', 'Q • ', current_examiner+':']) # and '?' in text
@@ -225,7 +233,7 @@ def process_one_range(range_of_lines, lines):
                 # if we're being maximally thorough, or we're not but the yes_no function returned "maybe" -- query GPT 
                 elif THOROUGH_BOOL or (not THOROUGH_BOOL and yes_no=='maybe'): 
                     gpt_query_idxs.append(i)
-                    local_name_to_stats[current_witness][current_examiner]['yes_no_questions'] += is_yes_no(active_question, OPENAI_KEY) # 1 if true, 0 if false
+                    local_name_to_stats[current_witness][current_examiner]['yes_no_questions'] += is_yes_no(clean_question(active_question), OPENAI_KEY) # 1 if true, 0 if false
 
             active_question = '' # reset
 
@@ -246,11 +254,14 @@ def merge_dicts(list_of_dicts):
 
 
 #### PROCESS ENTIRE TRANSCRIPT (in parallel)
-# find witness IDs to break the transcript into chunks, to hand each chunk to a separate core
+# find witness IDs to break the transcript into chunks, to hand each chunk to a separate thread
 witness_breaks = [i for i in range(len(lines)) if line_is_witness_identifier(lines, i)] 
 witness_ranges = [range(0, witness_breaks[i]) if i == 0 else range(witness_breaks[i-1], witness_breaks[i]) for i in range(len(witness_breaks))]
 
-results = Parallel(n_jobs=-1)(delayed(process_one_range)(r, lines) for r in witness_ranges)
+def process_range(r):
+    return process_one_range(r, lines)
+with ThreadPoolExecutor() as executor:
+    results = list(executor.map(process_range, witness_ranges))
 
 name_to_stats = merge_dicts([r[0] for r in results])
 all_gpt_query_idxs = [idx for sublist in [r[1] for r in results] for idx in sublist]
