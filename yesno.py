@@ -8,62 +8,67 @@ from collections import defaultdict
 from transformers import pipeline, AutoTokenizer, AutoModelForSequenceClassification
 from concurrent.futures import ProcessPoolExecutor, ThreadPoolExecutor
 
+# all code is now factored into functions, which are all called at the bottom of this script
 
 ############################### PROCESS COMMAND LINE ARGUMENTS ############################
 
-parser = argparse.ArgumentParser(description='Transcript yes/no analysis.')
-parser.add_argument('path', type=str, help='Path to the input directory of transcript files.')
-args = parser.parse_args()
-
-INPUT_DIRECTORY_PATH = args.path
-print(f'Running program on files at: {INPUT_DIRECTORY_PATH}')
+def parse_input_path():
+    parser = argparse.ArgumentParser(description='Transcript yes/no analysis.')
+    parser.add_argument('path', type=str, nargs='?', default='./dev/example_transcripts', help='Path to the input directory of transcript files.')
+    args = parser.parse_args()
+    INPUT_DIRECTORY_PATH = args.path
+    print(f'Running program on files at: {INPUT_DIRECTORY_PATH}')
+    return INPUT_DIRECTORY_PATH
 
 
 ############################### DATA LOADING AND PROCESSING ###############################
 
-files = [f for f in sorted(os.listdir(INPUT_DIRECTORY_PATH)) if '.pdf' in f]
+def get_lines(INPUT_DIRECTORY_PATH):
 
-# Read all the PDFs into a huge string, and then split into a big list of lines
-entire_transcript = ""
-print('Processing PDFs to text...')
-for file in tqdm(files, total=len(files)):
-  reader = PdfReader(os.path.join(INPUT_DIRECTORY_PATH, file))
-  for page in reader.pages:
-    entire_transcript += page.extract_text() + '\n'
-print('finished!\n')
+    files = [f for f in sorted(os.listdir(INPUT_DIRECTORY_PATH)) if f.endswith('.pdf')]
 
-# separate into lines, and filter out the ones that are just line numbers, e.g. "24 "
-lines = entire_transcript.split('\n')
-lines = [line for line in lines if not re.match(r'^[\d\s]*$', line)]
+    # Read all the PDFs into a huge string, and then split into a big list of lines
+    entire_transcript = ""
+    for file in tqdm(files, total=len(files), desc="Processing PDFs to text..."):
+        reader = PdfReader(os.path.join(INPUT_DIRECTORY_PATH, file))
+        for page in reader.pages:
+            entire_transcript += page.extract_text() + '\n'
+
+    # Separate into lines, and filter out the ones that are just line numbers, e.g. "24 "
+    lines = entire_transcript.split('\n')
+    lines = [line for line in lines if not re.match(r'^[\d\s]*$', line)]
+
+    return lines
 
 
 ############################### LOAD QUESTION CLASSIFIER ###################################
 
-# load question classification model from local. Or, if local doesn't exist, download from HuggingFace and save to local
-local_model_path = './model_local'
-model_name = 'PrimeQA/tydi-boolean_question_classifier-xlmr_large-20221117'
+classifier = None
+def init_classifier():
+    # load question classification model from local. Or, if local doesn't exist, download from HuggingFace and save to local
+    local_model_path = './model_local'
+    model_name = 'PrimeQA/tydi-boolean_question_classifier-xlmr_large-20221117'
 
-try: 
-    # try to load local model
-    print(f"Loading model from {local_model_path}")
-    tokenizer = AutoTokenizer.from_pretrained(local_model_path)
-    model = AutoModelForSequenceClassification.from_pretrained(local_model_path)
-except: 
-    # If loading locally fails, download and save the model
-    print(f"Downloading model {model_name}")
-    tokenizer = AutoTokenizer.from_pretrained(model_name)
-    model = AutoModelForSequenceClassification.from_pretrained(model_name)
-    # Save the model locally
-    tokenizer.save_pretrained(local_model_path)
-    model.save_pretrained(local_model_path)
-    print(f"Saved model to {local_model_path}")
+    try: 
+        # try to load local model
+        tokenizer = AutoTokenizer.from_pretrained(local_model_path)
+        model = AutoModelForSequenceClassification.from_pretrained(local_model_path)
+        print(f"Loaded model from {local_model_path}")
+    except: 
+        # If loading locally fails, download and save the model
+        tokenizer = AutoTokenizer.from_pretrained(model_name)
+        model = AutoModelForSequenceClassification.from_pretrained(model_name)
+        # Save the model locally
+        tokenizer.save_pretrained(local_model_path)
+        model.save_pretrained(local_model_path)
+        print(f"Downloaded and saved model to {local_model_path}")
 
-classifier = pipeline("text-classification", model=model, tokenizer=tokenizer)
+    global classifier
+    classifier = pipeline("text-classification", model=model, tokenizer=tokenizer)
 
 
-############################### TRANSCRIPT ANALYSIS #######################################
+############################### ANALYSIS HELPER FUNCTIONS  ################################
 
-# HELPER FUNCTIONS
 def remove_whitespace(text):
     return re.sub(r'[\t\n]', ' ', text)
 
@@ -135,14 +140,13 @@ def get_previous_question(lines, i, current_examiner):
         possible_question = prevline + possible_question
     return only_letters_numbers_normal_punctuation(possible_question)
 
-def is_yes_no_answer(lines,i,current_examiner):
+def is_yes_no_answer(lines, i, current_examiner):
     # querying the model is more time-consuming, so we only want to do it if we cannot tell from the answer itself
     answer = lines[i]
     for nextline in lines[i+1:i+10]: # check next lines and add continuance of answer if necessary
         if nextline.strip().endswith(('.','!','?')) or is_answer(nextline) or starts_question(nextline, current_examiner):
             break
         answer += nextline
-
     answer_split = re.sub(r'[^A-Za-z ]', '', answer).upper().strip().split(' ')
     if any(item in answer_split for item in ['YES', 'YEAH', 'YEP', 'NO', 'NOPE', 'UHHUH', 'UHUH', 'UMHUM', 'UMUM']) or 'NOT' in answer_split[0:3]:
         if len(answer_split) < 8:
@@ -156,38 +160,34 @@ def is_yes_no(question):
         return 'ERROR: unexpected classification result'
     return result == 'LABEL_0' # model returns 'LABEL_0' for yes/no questions and 'LABEL_1' for other questions
 
-
+# DEFAULT EXAMINER GUESSES
 # there are some instances where the 'examiner identification' line isn't read properly by the pdf reader
 # for these, we need a default guess for who the examiner is.
 # so, we'll find the first direct examination for each side (people/defense) and save who the examiner is -- this is a good guess
 
-# get default examiner guesses
+def get_default_examiners(lines):
+    DEFAULT_EXAMINER_KEY = {'people': '', 'defense': ''}
+    found = {'people': False, 'defense': False}
+    for i in range(len(lines)):
+        if line_is_witness_identifier(lines, i):
+            side = who_presents_this_witness(lines, i)
+            if side != 'unknown' and not found[side]:
+                # search the next 200 lines for a direct exam, if found one then get the examiner ID
+                direct_exam_found = True
+                for j,line in enumerate(lines[i:i+200]):
+                    if line_is_examination_identifier(lines, i+j) and 'DIRECT' in line:
+                        direct_exam_found = True
+                    if direct_exam_found and line_is_examiner_identifier(line):
+                        DEFAULT_EXAMINER_KEY[side] = clean_examiner_name(line)
+                        found[side] = True
+                        break
+        if found['people'] and found['defense']: 
+            break
+        
+    print('Default examiner default guesses: ', DEFAULT_EXAMINER_KEY, '\nIf these look incorrect, please stop and revise.')
+    return DEFAULT_EXAMINER_KEY
 
-# there are some instances where the 'examiner identification' line isn't read properly by the pdf reader
-# for these, we need a default guess for who the examiner is.
-# so, we'll find the first direct examination for each side (people/defense) and save who the examiner is -- this is a good guess
-
-DEFAULT_EXAMINER_KEY = {'people': '', 'defense': ''}
-found = {'people': False, 'defense': False}
-for i in range(len(lines)):
-    if line_is_witness_identifier(lines, i):
-        side = who_presents_this_witness(lines, i)
-        if side != 'unknown' and not found[side]:
-            # search the next 200 lines for a direct exam, if found one then get the examiner ID
-            direct_exam_found = True
-            for j,line in enumerate(lines[i:i+200]):
-                if line_is_examination_identifier(lines, i+j) and 'DIRECT' in line:
-                    direct_exam_found = True
-                if direct_exam_found and line_is_examiner_identifier(line):
-                    DEFAULT_EXAMINER_KEY[side] = clean_examiner_name(line)
-                    found[side] = True
-                    break
-    if found['people'] and found['defense']: 
-        break
-    
-print('Default examiner default guesses: ', DEFAULT_EXAMINER_KEY, '\nIf these look incorrect, please stop and revise.')
-
-def guess_examiner(witness_side, current_examination):
+def guess_examiner(witness_side, current_examination, DEFAULT_EXAMINER_KEY):
     print('Examiner not found, guessing from previous records (this message should be rare).')
     if 'DIRECT' in current_examination.upper():
         return DEFAULT_EXAMINER_KEY[witness_side]
@@ -197,81 +197,110 @@ def guess_examiner(witness_side, current_examination):
     return 'error: unknown examiner'
 
 
+###############################  TRANSCRIPT ANALYSIS  #####################################
+
 # loop through transcript to identify questions, and save the ones we need to classify as yes/no questions or not
-current_witness = ''
-current_witness_side = ''
-current_examination = ''
-current_examiner = ''
-name_to_stats = defaultdict(lambda: defaultdict(lambda: {'total_questions': 0, 'yes_no_questions': 0})) # use default dict so we don't have to check if key already exists
-questions_to_query = [] # to parallelize later
+def analyze_transcript(lines, DEFAULT_EXAMINER_KEY):
 
-for i,line in enumerate(lines):
+    current_witness = ''
+    current_witness_side = ''
+    current_examination = ''
+    current_examiner = ''
+    name_to_stats = defaultdict(lambda: defaultdict(lambda: {'total_questions': 0, 'yes_no_questions': 0})) # use default dict so we don't have to check if key already exists
+    questions_to_query = [] # to parallelize later
 
-    if line_is_witness_identifier(lines, i):
-        current_witness = clean_simple_line(line)
-        current_witness_side = who_presents_this_witness(lines, i)
+    for i,line in enumerate(lines):
 
-    elif line_is_examination_identifier(lines, i):
-        current_examiner = ''
-        current_examination = clean_simple_line(line)
+        if line_is_witness_identifier(lines, i):
+            current_witness = clean_simple_line(line)
+            current_witness_side = who_presents_this_witness(lines, i)
 
-    elif line_is_examiner_identifier(line):
-        current_examiner = clean_examiner_name(line)
+        elif line_is_examination_identifier(lines, i):
+            current_examiner = ''
+            current_examination = clean_simple_line(line)
 
-    elif is_answer(line):
+        elif line_is_examiner_identifier(line):
+            current_examiner = clean_examiner_name(line)
 
-        if current_examiner == '': # we may have missed this before, and have to guess now
-            current_examiner = guess_examiner(current_witness_side, current_examination) 
+        elif is_answer(line):
 
-        question = get_previous_question(lines, i, current_examiner) 
-            
-        if '?' in question: # to rule out things like "Q. Good morning."
-            name_to_stats[current_witness][current_examiner]['total_questions'] += 1
-            
-            if is_yes_no_answer(lines, i, current_examiner): # this function catches answers that are easy to see are yes/no answers, so we don't have to waste time querying the model
-                name_to_stats[current_witness][current_examiner]['yes_no_questions'] += 1
-            else:
-                # not able to identify it as yes/no, add this question (and identifying information) to the pile of questions to query later
-                questions_to_query.append((clean_question(question), current_witness, current_examiner))
+            if current_examiner == '': # we may have missed this before, and have to guess now
+                current_examiner = guess_examiner(current_witness_side, current_examination, DEFAULT_EXAMINER_KEY) 
+
+            question = get_previous_question(lines, i, current_examiner) 
+                
+            if '?' in question: # to rule out things like "Q. Good morning."
+                name_to_stats[current_witness][current_examiner]['total_questions'] += 1
+                
+                if is_yes_no_answer(lines, i, current_examiner): # this function catches answers that are easy to see are yes/no answers, so we don't have to waste time querying the model
+                    name_to_stats[current_witness][current_examiner]['yes_no_questions'] += 1
+                else:
+                    # not able to identify it as yes/no, add this question (and identifying information) to the pile of questions to query later
+                    questions_to_query.append((clean_question(question), current_witness, current_examiner))
 
 
-# execute question classification (in parallel)
-try:
-    with ProcessPoolExecutor() as executor: 
-        classifier_results = list(executor.map(is_yes_no, [q for q,_,_ in questions_to_query]))
-except:
-    print('Error in process pool, defaulting to threads')
+    print(f'Finished reading transcript, querying model with questions.')
+
+    # execute question classification (in parallel)
     with ThreadPoolExecutor() as executor:
         classifier_results = list(executor.map(is_yes_no, [q for q,_,_ in questions_to_query]))
 
-# add the results of these queries to our stats
-for (_,witness,examiner),result in zip(questions_to_query, classifier_results):
-    name_to_stats[witness][examiner]['yes_no_questions'] += result
+    # try:
+    #     with ProcessPoolExecutor() as executor: 
+    #         classifier_results = list(executor.map(is_yes_no, [q for q,_,_ in questions_to_query]))
+    # except:
+    #     print('Error in process pool, defaulting to threads')
+    #     with ThreadPoolExecutor() as executor:
+    #         classifier_results = list(executor.map(is_yes_no, [q for q,_,_ in questions_to_query]))
 
-print(f'Finished transcript, saving output.')
+    # add the results of these queries to our stats
+    for (_,witness,examiner),result in zip(questions_to_query, classifier_results):
+        name_to_stats[witness][examiner]['yes_no_questions'] += result
+
+    print(f'Finished analyzing transcript, saving output.')
+    return name_to_stats
 
 
 ############################### OUTPUT TXT FILE ###########################################
 
-output_csv_text = 'Witness,Examiner,Total questions,Yes/No Questions,Yes/No Percentage\n'
+def write_output(name_to_stats, INPUT_DIRECTORY_PATH):
+    output_csv_text = 'Witness,Examiner,Total questions,Yes/No Questions,Yes/No Percentage\n'
 
-for name,values in name_to_stats.items():
-    for examiner, stats in values.items():
-        output_csv_text += f'{name},{examiner},{stats["yes_no_questions"]},{stats["total_questions"]},'
-        try:
-            percentage = round(stats['yes_no_questions'] / stats['total_questions'] * 100, 2)
-        except:
-             percentage = 'N/A'
-        output_csv_text += f'{percentage}\n'
-    output_csv_text += '\n'
+    for name,values in name_to_stats.items():
+        for examiner, stats in values.items():
+            output_csv_text += f'{name},{examiner},{stats["yes_no_questions"]},{stats["total_questions"]},'
+            try:
+                percentage = round(stats['yes_no_questions'] / stats['total_questions'] * 100, 2)
+            except:
+                percentage = 'N/A'
+            output_csv_text += f'{percentage}\n'
+        output_csv_text += '\n'
 
-def get_unique_id(lines):
-    for l in lines[0:30]:
-        if 'NO. ' in l: # case number
-            return 'case-' + l.split('NO. ')[1].strip()
-    return datetime.now().strftime('date-%Y-%m-%d_%H-%M')
+    def get_unique_id(lines):
+        for l in lines[0:30]:
+            if 'NO. ' in l: # case number
+                return 'case-' + l.split('NO. ')[1].strip()
+        return datetime.now().strftime('date-%Y-%m-%d_%H-%M')
 
-output_path = os.path.join(INPUT_DIRECTORY_PATH, f'yesno_analysis_{get_unique_id(lines)}.csv')
+    output_path = os.path.join(INPUT_DIRECTORY_PATH, f'yesno_analysis_{get_unique_id(lines)}.csv')
 
-with open(output_path, 'w') as file:
-    file.write(output_csv_text)
+    with open(output_path, 'w') as file:
+        file.write(output_csv_text)
+
+
+############################### RUN ALL ###################################################
+
+if __name__ == "__main__":
+    start_time = datetime.datetime.now()
+            
+    INPUT_DIRECTORY_PATH = parse_input_path()
+    lines = get_lines(INPUT_DIRECTORY_PATH)
+    init_classifier()
+    DEFAULT_EXAMINER_KEY = get_default_examiners(lines)
+
+    name_to_stats = analyze_transcript(lines, DEFAULT_EXAMINER_KEY)
+    write_output(name_to_stats, INPUT_DIRECTORY_PATH)
+
+    end_time = datetime.datetime.now()
+    elapsed_minutes = (end_time - start_time).total_seconds() / 60
+    print(f"Script took {elapsed_minutes:.2f} minutes")
