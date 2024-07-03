@@ -11,7 +11,7 @@ The `yesno.py` script is the main product here (`yesno.ipynb` does the same thin
 **TO RUN**:
 - Install necessary dependencies. If you would like to use the same python virtual environment I used, follow instructions [here](https://python.land/virtual-environments/virtualenv#How_to_create_a_Python_venv) to create a virtual environment using `Python 3.12.3` and install all libraries within the `requirements.txt` file found in this folder.
 - Run `yesno.py` from any shell / command line with the following format: `python yesno.py /path/to/input/directory`
-    - On the example transcripts here (a full guilt + penalty phase trial), this takes about 10 minutes.
+    - On the example transcripts here (a full guilt + penalty phase trial), this takes about 25 minutes.
 
 The script will produce an output CSV file containing: for each witness, for each examiner (defense/prosecution), the # of yes/no questions and the # of total questions asked.
 

@@ -6,7 +6,7 @@ from pypdf import PdfReader
 from tqdm import tqdm
 from collections import defaultdict
 from transformers import pipeline, AutoTokenizer, AutoModelForSequenceClassification
-from concurrent.futures import ProcessPoolExecutor
+from concurrent.futures import ProcessPoolExecutor, ThreadPoolExecutor
 
 
 ############################### PROCESS COMMAND LINE ARGUMENTS ############################
@@ -236,8 +236,13 @@ for i,line in enumerate(lines):
 
 
 # execute question classification (in parallel)
-with ProcessPoolExecutor() as executor:
-    classifier_results = list(executor.map(is_yes_no, [q for q,_,_ in questions_to_query]))
+try:
+    with ProcessPoolExecutor() as executor: 
+        classifier_results = list(executor.map(is_yes_no, [q for q,_,_ in questions_to_query]))
+except:
+    print('Error in process pool, defaulting to threads')
+    with ThreadPoolExecutor() as executor:
+        classifier_results = list(executor.map(is_yes_no, [q for q,_,_ in questions_to_query]))
 
 # add the results of these queries to our stats
 for (_,witness,examiner),result in zip(questions_to_query, classifier_results):
