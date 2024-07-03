@@ -1,38 +1,23 @@
-# %pip install pypdf
-# %pip install tqdm
-# %pip install transformers
-# %pip install torch
-# %pip install openai
-# %pip install joblib
+# %pip install -r requirements.txt
 
 import os, re, argparse
 from datetime import datetime
 from pypdf import PdfReader
 from tqdm import tqdm
-from openai import OpenAI
 from collections import defaultdict
-from concurrent.futures import ThreadPoolExecutor
+from transformers import pipeline, AutoTokenizer, AutoModelForSequenceClassification
+from concurrent.futures import ProcessPoolExecutor
 
 
 ############################### PROCESS COMMAND LINE ARGUMENTS ############################
 
 parser = argparse.ArgumentParser(description='Transcript yes/no analysis.')
 parser.add_argument('path', type=str, help='Path to the input directory of transcript files.')
-parser.add_argument('-o', '--openai_key', dest='openai_key', help='OpenAI API key (alternative: save to a file called key.txt in this directory!)')
-parser.add_argument('--thorough', dest='thorough_bool', action='store_true', help='If flagged, this script will query GPT more times--a more thorough but slower verison.')
 args = parser.parse_args()
 
 INPUT_DIRECTORY_PATH = args.path
-THOROUGH_BOOL = args.thorough_bool
-if args.openai_key:
-    OPENAI_KEY = args.openai_key
-else: 
-    with open('key.txt','r') as f: 
-        OPENAI_KEY = f.read()
-print(OPENAI_KEY)
+print(f'Running program on files at: {INPUT_DIRECTORY_PATH}')
 
-print(f'Accessing input files at: {INPUT_DIRECTORY_PATH}')
-print(f'Thorough version?: {THOROUGH_BOOL}')
 
 ############################### DATA LOADING AND PROCESSING ###############################
 
@@ -52,22 +37,49 @@ lines = entire_transcript.split('\n')
 lines = [line for line in lines if not re.match(r'^[\d\s]*$', line)]
 
 
+############################### LOAD QUESTION CLASSIFIER ###################################
+
+# load question classification model from local. Or, if local doesn't exist, download from HuggingFace and save to local
+local_model_path = './model_local'
+model_name = 'PrimeQA/tydi-boolean_question_classifier-xlmr_large-20221117'
+
+try: 
+    # try to load local model
+    print(f"Loading model from {local_model_path}")
+    tokenizer = AutoTokenizer.from_pretrained(local_model_path)
+    model = AutoModelForSequenceClassification.from_pretrained(local_model_path)
+except: 
+    # If loading locally fails, download and save the model
+    print(f"Downloading model {model_name}")
+    tokenizer = AutoTokenizer.from_pretrained(model_name)
+    model = AutoModelForSequenceClassification.from_pretrained(model_name)
+    # Save the model locally
+    tokenizer.save_pretrained(local_model_path)
+    model.save_pretrained(local_model_path)
+    print(f"Saved model to {local_model_path}")
+
+classifier = pipeline("text-classification", model=model, tokenizer=tokenizer)
+
 
 ############################### TRANSCRIPT ANALYSIS #######################################
 
 # HELPER FUNCTIONS
-def delete_numbers_whitespace(text):
-    return re.sub(r'[\d\t\n]', '', text).strip()
+def remove_whitespace(text):
+    return re.sub(r'[\t\n]', ' ', text)
+
+def only_letters_numbers_normal_punctuation(text):
+    out = re.sub(r'[^a-zA-Z0-9().,?!\-"\':;/ ]', '', text)
+    if out.startswith('.'): out = out[1:].strip()
+    return out
 
 def clean_simple_line(line):
     # removes punctuation/numbers/non-letters
     return re.sub(r'[^a-zA-Z\s]', '', line).upper().strip() 
 
 def clean_question(question):
-    # mainly to delete "Q." and \t and whitespace
-    clean =  re.sub(r'[\t\n\"]', ' ', question) 
-    clean = re.sub(r'Q\.', '', clean)  
-    clean = re.sub(r'\s+', ' ', clean)
+    clean =  re.sub(r'[\t\n\s+]', ' ', question) # tabs, newlines, and extra spaces
+    clean = re.sub(r'^\d+\s*', '', clean) # leading number and whitespace (line number)
+    clean = re.sub(r'["]|Q |Q. |Q . |Q• |Q • |Q- |', '', clean)  # Question marker
     return clean.upper().strip()
 
 def line_is_witness_identifier(lines, i):
@@ -103,22 +115,28 @@ def line_is_examination_identifier(lines, i):
         )
 
 def is_answer(line):
-    return  re.sub(r'[^a-zA-Z. ]', '', line).strip().startswith('A. ') and not re.sub(r'[^a-zA-Z\.]', '', line).startswith('A.M.')# or line.strip().startswith('THE WITNESS:')
+    starts_a = re.sub(r'[^a-zA-Z. ]', '', line).strip().startswith('A. ') or re.sub(r' ', '', line).strip().startswith('.A.')
+    not_time = not re.sub(r'[^a-zA-Z\.]', '', line).startswith('A.M.')
+    return starts_a and not_time
+    # return re.sub(r'[^a-zA-Z. ]', '', line).strip().startswith('A. ') and not re.sub(r'[^a-zA-Z\.]', '', line).startswith('A.M.') # or line.strip().startswith('THE WITNESS:')
 
 def starts_question(text, current_examiner):
-    return any(item in text for item in ['Q. ', 'Q . ', 'Q• ', 'Q • ', current_examiner+':']) # and '?' in text
+    return any(item in text for item in ['Q. ', 'Q . ', 'Q• ', 'Q • ', 'Q- ', current_examiner+':']) # and '?' in text 
 
-def guess_previous_question(lines, i):
+def get_previous_question(lines, i, current_examiner):
     # if the previous question was not read in properly with 'Q.', then we want to parse what the question was when we hit an answer
     possible_question = lines[i-1]
-    for prevline in reversed(lines[i-11:i-2]): # check previous 10 lines for question, stop when we hit punctuation
-        if prevline.strip().endswith(('.','!','?')) or any(item in prevline for item in ['A. ', 'A . ']):
+    for j,prevline in enumerate(reversed(lines[i-11:i-1])): # check previous 10 lines for question, stop when we hit punctuation
+        prevline = remove_whitespace(prevline)
+        if starts_question(possible_question, current_examiner):
+            break
+        if prevline.strip().endswith(('.','!','?', ')')) or is_answer(prevline) or line_is_witness_identifier(lines, i-2-j) or line_is_examiner_identifier(prevline) or line_is_examination_identifier(lines, i-2-j):
             break
         possible_question = prevline + possible_question
-    return delete_numbers_whitespace(possible_question) 
+    return only_letters_numbers_normal_punctuation(possible_question)
 
 def is_yes_no_answer(lines,i,current_examiner):
-    # querying chatGPT for yes/no questions is very time consuming, so we only want to do it if we cannot tell from the answer itself
+    # querying the model is more time-consuming, so we only want to do it if we cannot tell from the answer itself
     answer = lines[i]
     for nextline in lines[i+1:i+10]: # check next lines and add continuance of answer if necessary
         if nextline.strip().endswith(('.','!','?')) or is_answer(nextline) or starts_question(nextline, current_examiner):
@@ -128,25 +146,22 @@ def is_yes_no_answer(lines,i,current_examiner):
     answer_split = re.sub(r'[^A-Za-z ]', '', answer).upper().strip().split(' ')
     if any(item in answer_split for item in ['YES', 'YEAH', 'YEP', 'NO', 'NOPE', 'UHHUH', 'UHUH', 'UMHUM', 'UMUM']) or 'NOT' in answer_split[0:3]:
         if len(answer_split) < 8:
-            return 'yes'
-        return 'maybe'
-    if len(answer_split) < 5:
-        return 'maybe'
-    return 'no'
+            return True
+    return False
 
-def is_yes_no(question, OPENAI_KEY):
-    # returns true if the question is a yes/no question. queries GPT to do so!
-    client = OpenAI(api_key=OPENAI_KEY)
+def is_yes_no(question):
+    # queries question classification model whether the question is a yes/no question or not, returns boolean
+    result = classifier(question)[0]['label']
+    if not result in ['LABEL_0', 'LABEL_1']:
+        return 'ERROR: unexpected classification result'
+    return result == 'LABEL_0' # model returns 'LABEL_0' for yes/no questions and 'LABEL_1' for other questions
 
-    completion = client.chat.completions.create(
-        model="gpt-3.5-turbo",
-        messages=[
-            {"role": "system", "content": "You are an expert at identifying yes/no questions, and at analyzing courtroom transcripts."},
-            {"role": "user", "content": f"Is the following question a yes or no question? Respond with 'yes' or 'no':\n\nQuestion: {question}"}
-        ]
-    )
-    return 'yes' == completion.choices[0].message.content.strip().lower()
 
+# there are some instances where the 'examiner identification' line isn't read properly by the pdf reader
+# for these, we need a default guess for who the examiner is.
+# so, we'll find the first direct examination for each side (people/defense) and save who the examiner is -- this is a good guess
+
+# get default examiner guesses
 
 # there are some instances where the 'examiner identification' line isn't read properly by the pdf reader
 # for these, we need a default guess for who the examiner is.
@@ -182,89 +197,51 @@ def guess_examiner(witness_side, current_examination):
     return 'error: unknown examiner'
 
 
-#### LOOP THROUGH AND ANALYZE TRANSCRIPT
+# loop through transcript to identify questions, and save the ones we need to classify as yes/no questions or not
+current_witness = ''
+current_witness_side = ''
+current_examination = ''
+current_examiner = ''
+name_to_stats = defaultdict(lambda: defaultdict(lambda: {'total_questions': 0, 'yes_no_questions': 0})) # use default dict so we don't have to check if key already exists
+questions_to_query = [] # to parallelize later
 
-# split this process into ranges of lines corresponding to each witness (to parallelize for speed)
-def process_one_range(range_of_lines, lines):
-    # initialize variables to be used as we loop
-    current_witness = ''
-    current_witness_side = ''
-    current_examination = ''
-    current_examiner = ''
-    active_question = ''
-    gpt_query_idxs = []
-    local_name_to_stats = defaultdict(lambda: defaultdict(lambda: {'total_questions': 0, 'yes_no_questions': 0})) # use default dict so we don't have to check if key already exists
+for i,line in enumerate(lines):
 
-    for i in range_of_lines:
-        line = lines[i]
+    if line_is_witness_identifier(lines, i):
+        current_witness = clean_simple_line(line)
+        current_witness_side = who_presents_this_witness(lines, i)
 
-        if line_is_witness_identifier(lines, i):
-            current_witness = clean_simple_line(line)
-            current_witness_side = who_presents_this_witness(lines, i)
-            active_question = '' # just in case we get carried away
+    elif line_is_examination_identifier(lines, i):
+        current_examiner = ''
+        current_examination = clean_simple_line(line)
 
-        elif line_is_examination_identifier(lines, i):
-            current_examiner = ''
-            current_examination = clean_simple_line(line)
-            active_question = ''
+    elif line_is_examiner_identifier(line):
+        current_examiner = clean_examiner_name(line)
 
-        elif line_is_examiner_identifier(line):
-            current_examiner = clean_examiner_name(line)
-            active_question = ''
+    elif is_answer(line):
 
-        elif starts_question(line, current_examiner): # when we eventually hit an answer, I want the active_question to contain everything since the last question started
-            active_question = line # start adding to active_question
+        if current_examiner == '': # we may have missed this before, and have to guess now
+            current_examiner = guess_examiner(current_witness_side, current_examination) 
 
-        elif is_answer(line):
-            # we may need to guess necessary preceding info if there was an error in pdf reading
-            if current_examiner == '': 
-                current_examiner = guess_examiner(current_witness_side, current_examination) 
-            if active_question == '': 
-                active_question = guess_previous_question(lines, i) 
-                
-            if '?' in active_question: # to rule out things like "Q. Good morning."
-                local_name_to_stats[current_witness][current_examiner]['total_questions'] += 1
-
-                yes_no = is_yes_no_answer(lines, i, current_examiner)
-
-                if yes_no == 'yes': 
-                    local_name_to_stats[current_witness][current_examiner]['yes_no_questions'] += 1
-
-                # if we're being maximally thorough, or we're not but the yes_no function returned "maybe" -- query GPT 
-                elif THOROUGH_BOOL or (not THOROUGH_BOOL and yes_no=='maybe'): 
-                    gpt_query_idxs.append(i)
-                    local_name_to_stats[current_witness][current_examiner]['yes_no_questions'] += is_yes_no(clean_question(active_question), OPENAI_KEY) # 1 if true, 0 if false
-
-            active_question = '' # reset
-
-        elif active_question:
-            active_question += line # if we started a question, add this line. resets at every answer or special identifying line
-
-    return dict(local_name_to_stats), gpt_query_idxs
+        question = get_previous_question(lines, i, current_examiner) 
+            
+        if '?' in question: # to rule out things like "Q. Good morning."
+            name_to_stats[current_witness][current_examiner]['total_questions'] += 1
+            
+            if is_yes_no_answer(lines, i, current_examiner): # this function catches answers that are easy to see are yes/no answers, so we don't have to waste time querying the model
+                name_to_stats[current_witness][current_examiner]['yes_no_questions'] += 1
+            else:
+                # not able to identify it as yes/no, add this question (and identifying information) to the pile of questions to query later
+                questions_to_query.append((clean_question(question), current_witness, current_examiner))
 
 
-def merge_dicts(list_of_dicts):
-    main = defaultdict(lambda: defaultdict(lambda: {'total_questions': 0, 'yes_no_questions': 0}))
-    for d in list_of_dicts:
-        for witness, subdict in d.items():
-            for examiner, values in subdict.items():
-                main[witness][examiner]['total_questions'] += values['total_questions']
-                main[witness][examiner]['yes_no_questions'] += values['yes_no_questions']
-    return {k:dict(v) for k,v in main.items()}
+# execute question classification (in parallel)
+with ProcessPoolExecutor() as executor:
+    classifier_results = list(executor.map(is_yes_no, [q for q,_,_ in questions_to_query]))
 
-
-#### PROCESS ENTIRE TRANSCRIPT (in parallel)
-# find witness IDs to break the transcript into chunks, to hand each chunk to a separate thread
-witness_breaks = [i for i in range(len(lines)) if line_is_witness_identifier(lines, i)] 
-witness_ranges = [range(0, witness_breaks[i]) if i == 0 else range(witness_breaks[i-1], witness_breaks[i]) for i in range(len(witness_breaks))]
-
-def process_range(r):
-    return process_one_range(r, lines)
-with ThreadPoolExecutor() as executor:
-    results = list(executor.map(process_range, witness_ranges))
-
-name_to_stats = merge_dicts([r[0] for r in results])
-all_gpt_query_idxs = [idx for sublist in [r[1] for r in results] for idx in sublist]
+# add the results of these queries to our stats
+for (_,witness,examiner),result in zip(questions_to_query, classifier_results):
+    name_to_stats[witness][examiner]['yes_no_questions'] += result
 
 print(f'Finished transcript, saving output.')
 
@@ -281,6 +258,7 @@ for name,values in name_to_stats.items():
         except:
              percentage = 'N/A'
         output_csv_text += f'{percentage}\n'
+    output_csv_text += '\n'
 
 def get_unique_id(lines):
     for l in lines[0:30]:
@@ -288,8 +266,7 @@ def get_unique_id(lines):
             return 'case-' + l.split('NO. ')[1].strip()
     return datetime.now().strftime('date-%Y-%m-%d_%H-%M')
 
-thorough_tag = 'thorough' if THOROUGH_BOOL  else 'nonthorough'
-output_path = os.path.join(INPUT_DIRECTORY_PATH, f'yesno_analysis_{get_unique_id(lines)}_{thorough_tag}.csv')
+output_path = os.path.join(INPUT_DIRECTORY_PATH, f'yesno_analysis_{get_unique_id(lines)}.csv')
 
-with open(output_path, 'w') as file: # CHANGE FILENAME TO UNIQUE ID
+with open(output_path, 'w') as file:
     file.write(output_csv_text)
