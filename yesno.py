@@ -291,7 +291,7 @@ def write_output(name_to_stats, INPUT_DIRECTORY_PATH):
 ############################### RUN ALL ###################################################
 
 if __name__ == "__main__":
-    start_time = datetime.datetime.now()
+    start_time = datetime.now()
             
     INPUT_DIRECTORY_PATH = parse_input_path()
     lines = get_lines(INPUT_DIRECTORY_PATH)
@@ -301,6 +301,6 @@ if __name__ == "__main__":
     name_to_stats = analyze_transcript(lines, DEFAULT_EXAMINER_KEY)
     write_output(name_to_stats, INPUT_DIRECTORY_PATH)
 
-    end_time = datetime.datetime.now()
+    end_time = datetime.now()
     elapsed_minutes = (end_time - start_time).total_seconds() / 60
     print(f"Script took {elapsed_minutes:.2f} minutes")
