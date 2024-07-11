@@ -273,7 +273,7 @@ def write_output(name_to_stats, INPUT_DIRECTORY_PATH):
                 percentage = round(stats['yes_no_questions'] / stats['total_questions'] * 100, 2)
             except:
                 percentage = 'N/A'
-            output_csv_text += f'{percentage}\n'
+            output_csv_text += f'{percentage}'
         output_csv_text += '\n'
 
     def get_unique_id(lines):
