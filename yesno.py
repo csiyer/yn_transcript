@@ -263,8 +263,10 @@ def analyze_transcript(lines, DEFAULT_EXAMINER_KEY):
 
 ############################### OUTPUT TXT FILE ###########################################
 
+############################### OUTPUT TXT FILE ###########################################
+
 def write_output(name_to_stats, INPUT_DIRECTORY_PATH):
-    output_csv_text = 'Witness,Examiner,Total questions,Yes/No Questions,Yes/No Percentage\n'
+    output_csv_text = 'Witness,Examiner,Yes/No Questions,Total questions,Yes/No Percentage\n'
 
     for name,values in name_to_stats.items():
         for examiner, stats in values.items():
@@ -277,10 +279,11 @@ def write_output(name_to_stats, INPUT_DIRECTORY_PATH):
         output_csv_text += '\n'
 
     def get_unique_id(lines):
+        datetag = datetime.now().strftime('date-%Y-%m-%d_%H-%M')
         for l in lines[0:30]:
             if 'NO. ' in l: # case number
-                return 'case-' + l.split('NO. ')[1].strip()
-        return datetime.now().strftime('date-%Y-%m-%d_%H-%M')
+                return f'case-{l.split('NO. ')[1].strip()}_{datetag}'
+        return datetag
 
     output_path = os.path.join(INPUT_DIRECTORY_PATH, f'yesno_analysis_{get_unique_id(lines)}.csv')
 
