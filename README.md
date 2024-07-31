@@ -1,4 +1,4 @@
-# Transcript Yes/No Question Analysis 
+# Transcript Analysis 
 
 Hello! This directory contains code to read trial transcript PDFs and do 2 analyses:
 1. `yesno.py`: How many yes/no questions each witness is asked by each examiner, and how many times they are interrupted. (`yesno.ipynb` does the same, but as an interactive notebook--for testing purposes)
