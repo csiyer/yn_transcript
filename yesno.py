@@ -1,3 +1,8 @@
+"""
+This script analyses a transcript to quantify how many yes/no questions each witness is asked. 
+It uses a question classification model someone else wrote.
+It can be run with: python yesno.py /path/to/RT/directory
+"""
 # %pip install -r requirements.txt
 
 import os, re, argparse
@@ -16,9 +21,10 @@ def parse_input_path():
     parser = argparse.ArgumentParser(description='Transcript yes/no analysis.')
     parser.add_argument('path', type=str, nargs='?', default='./dev/example_transcripts', help='Path to the input directory of transcript files.')
     args = parser.parse_args()
-    INPUT_DIRECTORY_PATH = args.path
-    print(f'Running program on files at: {INPUT_DIRECTORY_PATH}')
-    return INPUT_DIRECTORY_PATH
+    if not os.path.isdir(args.path):
+        raise ValueError(f"The input directory '{args.path}' does not exist or is not a directory.")
+    print(f'Running program on files at: {args.path}')
+    return args.path
 
 
 ############################### DATA LOADING AND PROCESSING ###############################
@@ -265,7 +271,14 @@ def analyze_transcript(lines, DEFAULT_EXAMINER_KEY):
 
 ############################### OUTPUT TXT FILE ###########################################
 
-def write_output(name_to_stats, INPUT_DIRECTORY_PATH):
+def get_unique_id(lines):
+        datetag = datetime.now().strftime('date-%Y-%m-%d_%H-%M')
+        for l in lines[0:30]:
+            if 'NO. ' in l: # case number
+                return f"case-{l.split('NO. ')[1].strip()}_{datetag}"
+        return datetag
+
+def write_output(name_to_stats, INPUT_DIRECTORY_PATH, unique_id):
     output_csv_text = 'Witness,Examiner,Yes/No Questions,Total questions,Yes/No Percentage\n'
 
     for name,values in name_to_stats.items():
@@ -278,14 +291,7 @@ def write_output(name_to_stats, INPUT_DIRECTORY_PATH):
             output_csv_text += f'{percentage}'
         output_csv_text += '\n'
 
-    def get_unique_id(lines):
-        datetag = datetime.now().strftime('date-%Y-%m-%d_%H-%M')
-        for l in lines[0:30]:
-            if 'NO. ' in l: # case number
-                return f'case-{l.split('NO. ')[1].strip()}_{datetag}'
-        return datetag
-
-    output_path = os.path.join(INPUT_DIRECTORY_PATH, f'yesno_analysis_{get_unique_id(lines)}.csv')
+    output_path = os.path.join(INPUT_DIRECTORY_PATH, f'yesno_analysis_{unique_id}.csv')
 
     with open(output_path, 'w') as file:
         file.write(output_csv_text)
@@ -302,7 +308,9 @@ if __name__ == "__main__":
     DEFAULT_EXAMINER_KEY = get_default_examiners(lines)
 
     name_to_stats = analyze_transcript(lines, DEFAULT_EXAMINER_KEY)
-    write_output(name_to_stats, INPUT_DIRECTORY_PATH)
+
+    unique_id = get_unique_id(lines)
+    write_output(name_to_stats, INPUT_DIRECTORY_PATH, unique_id)
 
     end_time = datetime.now()
     elapsed_minutes = (end_time - start_time).total_seconds() / 60
