@@ -271,9 +271,6 @@ def analyze_transcript(lines, DEFAULT_EXAMINER_KEY):
             if next_speaker:
                 name_to_stats[current_witness][next_speaker]['interruptions'] += 1
 
-                if i == 76083:
-                    print(i, current_examiner, next_speaker)
-
 
     # these fields aren't relevant for the court (just interruptions)
     for witness,stats in name_to_stats.items():
