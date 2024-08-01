@@ -312,7 +312,7 @@ def write_output(name_to_stats, INPUT_DIRECTORY_PATH, unique_id):
             except:
                 percentage = 'N/A'
             output_csv_text += f'{percentage},'
-            output_csv_text += f'{stats["interruptions"]}'
+            output_csv_text += f'{stats["interruptions"]},'
         output_csv_text += '\n'
 
     output_path = os.path.join(INPUT_DIRECTORY_PATH, f'yesno_analysis_{unique_id}.csv')
