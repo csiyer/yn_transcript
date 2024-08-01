@@ -166,6 +166,27 @@ def is_yes_no(question):
         return 'ERROR: unexpected classification result'
     return result == 'LABEL_0' # model returns 'LABEL_0' for yes/no questions and 'LABEL_1' for other questions
 
+#### for interruptions
+def within_answer(lines, i, current_examiner, DEFAULT_EXAMINER_KEY):
+    # is this line part of an answer? useful for identifying interruptions
+    for line in reversed(lines[i-50:i+1]): # loop through previous 20 lines
+        if is_answer(line) or 'THE WITNESS:' in line:
+            return True
+        if starts_question(line, current_examiner) or 'THE COURT:' in line or any([name in line for name in DEFAULT_EXAMINER_KEY.values()]):
+            return False
+    return False ## assuming answers aren't usually longer than this many lines
+
+
+def who_says_next_line(lines,i, current_examiner):
+    # useful for seeing who interrupts
+    if lines[i+1].strip().startswith('Q') or starts_question(lines[i+1], current_examiner):
+        return current_examiner
+    if 'THE COURT' in lines[i+1]:
+        return 'COURT'
+    if ':' in lines[i+1]:
+        return clean_examiner_name(lines[i+1])
+    return None
+
 # DEFAULT EXAMINER GUESSES
 # there are some instances where the 'examiner identification' line isn't read properly by the pdf reader
 # for these, we need a default guess for who the examiner is.
@@ -212,7 +233,7 @@ def analyze_transcript(lines, DEFAULT_EXAMINER_KEY):
     current_witness_side = ''
     current_examination = ''
     current_examiner = ''
-    name_to_stats = defaultdict(lambda: defaultdict(lambda: {'total_questions': 0, 'yes_no_questions': 0})) # use default dict so we don't have to check if key already exists
+    name_to_stats = defaultdict(lambda: defaultdict(lambda: {'total_questions': 0, 'yes_no_questions': 0, 'interruptions': 0})) # use default dict so we don't have to check if key already exists
     questions_to_query = [] # to parallelize later
 
     for i,line in enumerate(lines):
@@ -244,20 +265,27 @@ def analyze_transcript(lines, DEFAULT_EXAMINER_KEY):
                     # not able to identify it as yes/no, add this question (and identifying information) to the pile of questions to query later
                     questions_to_query.append((clean_question(question), current_witness, current_examiner))
 
+        # identify an interruption
+        if line.strip().endswith('--') and within_answer(lines, i, current_examiner, DEFAULT_EXAMINER_KEY):
+            next_speaker = who_says_next_line(lines, i, current_examiner)
+            if next_speaker:
+                name_to_stats[current_witness][next_speaker]['interruptions'] += 1
+
+                if i == 76083:
+                    print(i, current_examiner, next_speaker)
+
+
+    # these fields aren't relevant for the court (just interruptions)
+    for witness,stats in name_to_stats.items():
+        if 'COURT' in stats.keys():
+            stats['COURT']['total_questions'] = None
+            stats['COURT']['yes_no_questions'] = None
+                    
 
     print(f'Finished reading transcript, querying model with questions.')
-
     # execute question classification (in parallel)
     with ThreadPoolExecutor() as executor:
         classifier_results = list(executor.map(is_yes_no, [q for q,_,_ in questions_to_query]))
-
-    # try:
-    #     with ProcessPoolExecutor() as executor: 
-    #         classifier_results = list(executor.map(is_yes_no, [q for q,_,_ in questions_to_query]))
-    # except:
-    #     print('Error in process pool, defaulting to threads')
-    #     with ThreadPoolExecutor() as executor:
-    #         classifier_results = list(executor.map(is_yes_no, [q for q,_,_ in questions_to_query]))
 
     # add the results of these queries to our stats
     for (_,witness,examiner),result in zip(questions_to_query, classifier_results):
@@ -269,8 +297,6 @@ def analyze_transcript(lines, DEFAULT_EXAMINER_KEY):
 
 ############################### OUTPUT TXT FILE ###########################################
 
-############################### OUTPUT TXT FILE ###########################################
-
 def get_unique_id(lines):
         datetag = datetime.now().strftime('date-%Y-%m-%d_%H-%M')
         for l in lines[0:30]:
@@ -279,7 +305,7 @@ def get_unique_id(lines):
         return datetag
 
 def write_output(name_to_stats, INPUT_DIRECTORY_PATH, unique_id):
-    output_csv_text = 'Witness,Examiner,Yes/No Questions,Total questions,Yes/No Percentage\n'
+    output_csv_text = 'Witness,Examiner,Yes/No Questions,Total questions,Yes/No Percentage,Interruptions\n'
 
     for name,values in name_to_stats.items():
         for examiner, stats in values.items():
@@ -288,7 +314,8 @@ def write_output(name_to_stats, INPUT_DIRECTORY_PATH, unique_id):
                 percentage = round(stats['yes_no_questions'] / stats['total_questions'] * 100, 2)
             except:
                 percentage = 'N/A'
-            output_csv_text += f'{percentage}'
+            output_csv_text += f'{percentage},'
+            output_csv_text += f'{stats["interruptions"]}'
         output_csv_text += '\n'
 
     output_path = os.path.join(INPUT_DIRECTORY_PATH, f'yesno_analysis_{unique_id}.csv')

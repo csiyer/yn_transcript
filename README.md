@@ -15,7 +15,7 @@ The first time `yesno.py` runs, it will create a directory called `model_local` 
 - Run script(s)
     - `yesno.py` can be run from any shell / command line with the following format: `python yesno.py /path/to/RT/directory` with the filepath to a folder of RTs. 
         - On the example transcripts I used (a full guilt + penalty phase trial; excluded here to not be public), this takes about 25 minutes.
-        - This will produce a CSV output containing the name of each witness, and how many yes/no questions + total questions they are asked by each examiner (defense/prosecution).
+        - This will produce a CSV output containing the name of each witness, and how many yes/no questions + total questions they are asked by each examiner (defense/prosecution), and how many times that examiner interrupts them.
     - `word_search.py` can be run with `python word_search.py /path/to/RT/directory`
         - Add `search_terms=/optional/path/to/csv/of/additional/search/terms` to the end of the command if you want to include additional search terms (beyond those found in "UPDATED Internal HCRC RJA Glossary of racist language"--saved to `word_search_terms_default.csv`). These terms should be saved as a CSV file with each word/term, separated with commas. 
         - On the example transcripts, this takes ~1 min to run.
@@ -26,5 +26,8 @@ The first time `yesno.py` runs, it will create a directory called `model_local` 
     1. Every python PDF reader is imperfect, and misses words/lines/characters that are important in parsing the text. ESPECIALLY TRUE for the estimated "true page numbers" read from the top right corner of the PDFs by the word search script--these are often wrong.
     2. Language is hard to classify! Consider the question "Do you remember him telling you anything else?" This is technically a yes/no question, but is really asking for more. Alternatively, "Was he happy or sad that day?" is effectively a yes/no question, but isn't technically. This program and the model used here will not be perfect on questions like these.
 
+
+Current questions for Sam:
+- Do you want to include interruptions from making an objection?
 
 Author: Chris Iyer, updated 7/30/24
